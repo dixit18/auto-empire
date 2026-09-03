@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* tweakcn-style tokens: light + dark + per-world accents */
+:root {
+  --background: 48 100% 97%;
+  --foreground: 150 25% 12%;
+  --card: 0 0% 100%;
+  --primary: 152 60% 32%;
+  --accent: 32 95% 55%;
+  --muted: 140 20% 92%;
+  --border: 140 20% 85%;
+  --branch: #5b3a1e;
+  --leaf: #2f9e44;
+}
+.dark {
+  --background: 145 30% 7%;
+  --foreground: 48 100% 94%;
+  --card: 145 25% 11%;
+  --primary: 152 65% 45%;
+  --accent: 35 95% 60%;
+  --muted: 145 20% 14%;
+  --border: 145 20% 20%;
+  --branch: #8a5a2e;
+  --leaf: #40c057;
+}
+body { background: hsl(var(--background)); color: hsl(var(--foreground)); }
+
+/* world themes - forest / beach / sunset / jungle-night */
+[data-world="forest"] { --primary: 152 60% 32%; --accent: 32 95% 55%; }
+[data-world="beach"] { --primary: 195 85% 40%; --accent: 18 100% 60%; }
+[data-world="sunset"] { --primary: 280 70% 55%; --accent: 25 100% 60%; }
+[data-world="lagoon"] { --primary: 175 70% 35%; --accent: 45 100% 55%; }
+
+.jungle-bg {
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(64,192,87,.25), transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(255,200,80,.2), transparent 45%),
+    linear-gradient(180deg, transparent 60%, rgba(47,158,68,.15));
+}
+.beach-bg {
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(255,220,150,.5), transparent 50%),
+    linear-gradient(180deg, #bfefff 0%, hsl(var(--background)) 55%);
+}
+.card-hover { transition: transform .35s cubic-bezier(.2,.9,.3,1.2), box-shadow .3s; }
+.card-hover:hover { transform: translateY(-4px) rotate(-.3deg); box-shadow: 0 18px 40px -18px rgba(0,0,0,.4); }
+.vine { stroke: var(--branch); stroke-width: 10; stroke-linecap: round; fill: none; }
+.leaf { fill: var(--leaf); opacity: .9; }
