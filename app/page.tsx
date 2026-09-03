@@ -1,7 +1,7 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ThemeBar from "@/components/ThemeBar";
-import JungleScene from "@/components/JungleScene";
+import OpsHero from "@/components/OpsHero";
 import TeamCard from "@/components/TeamCard";
 import KpiStrip, { type Log } from "@/components/KpiStrip";
 import LogFeed from "@/components/LogFeed";
@@ -10,19 +10,13 @@ import Approvals from "@/components/Approvals";
 import { Motif } from "@/components/motifs";
 import { TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
 
-const SIM_MSGS = [
-  "scoring demand × competition",
-  "draft v1 ready → master QA",
-  "compounding: improving prior output",
-  "writing listing copy + pricing",
-  "packing 5 pins for launch",
-  "updating HANDOFF + STATE",
-];
+type TeamState = { phase: string; taskIndex: number; status: string; nextTask?: string; lastFile?: string; updated?: string };
 
 export default function Page() {
   const [world, setWorld] = useState("forest");
   const [cur, setCur] = useState<Team>(TEAMS[4]);
   const [logs, setLogs] = useState<Log[]>([]);
+  const [states, setStates] = useState<Record<string, TeamState>>({});
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
@@ -30,24 +24,29 @@ export default function Page() {
 
   const refresh = useCallback(async () => {
     try {
-      const r = await fetch("/api/logs", { cache: "no-store" });
-      const j = await r.json();
-      if (Array.isArray(j.logs) && j.logs.length) setLogs(j.logs);
-    } catch { /* offline → keep heartbeat */ }
+      const [lr, tr] = await Promise.all([
+        fetch("/api/logs", { cache: "no-store" }),
+        fetch("/api/teams", { cache: "no-store" }),
+      ]);
+      const lj = await lr.json();
+      const tj = await tr.json();
+      if (Array.isArray(lj.logs)) setLogs(lj.logs);
+      if (tj.live?.per) {
+        const m: Record<string, TeamState> = {};
+        for (const [dir, s] of Object.entries<any>(tj.live.per)) {
+          const id = TEAMS.find((t) => t.dir === dir)?.id;
+          if (id) m[id] = s;
+        }
+        setStates(m);
+      }
+    } catch { /* offline → keep last known */ }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => {
     refresh();
     const id = setInterval(refresh, 5000);
-    const sim = setInterval(() => {
-      setLogs((p) => [{
-        ts: new Date().toISOString(), team: TEAMS[Math.floor(Math.random() * TEAMS.length)].dir,
-        from: "MASTER", to: "WORKER", phase: ["P0", "P1", "P2", "P3"][Math.floor(Math.random() * 4)],
-        msg: SIM_MSGS[Math.floor(Math.random() * SIM_MSGS.length)], status: "progress",
-      }, ...p].slice(0, 60));
-    }, 7000);
-    return () => { clearInterval(id); clearInterval(sim); };
+    return () => clearInterval(id);
   }, [refresh]);
 
   async function run(teamId?: string, autoAll?: boolean) {
@@ -61,21 +60,19 @@ export default function Page() {
     } finally { setBusy(false); }
   }
 
-  const status = useMemo(() => {
-    if (!logs.length) return "bus idle — press Run ALL";
-    const l = logs[0];
-    return `${logs.length} events · latest ${l.from}→${l.to} [${l.phase}]`;
-  }, [logs]);
-
-  const activity = Math.min(1, logs.length / 40);
+  const st: TeamState | undefined = states[cur.id];
+  const statusOf = (t: Team) => {
+    const s = states[t.id];
+    if (!s) return "…";
+    if (s.status === "DONE_ALL") return "DONE";
+    return `${s.phase} · ${s.taskIndex}/3`;
+  };
 
   return (
     <div className="min-h-screen">
-      {/* sticky header */}
       <header className="sticky top-0 z-20 border-b" style={{ background: "hsl(var(--background) / .85)", backdropFilter: "blur(12px)" }}>
         <div className="mx-auto max-w-[1400px] px-3 sm:px-5 py-2.5 flex flex-wrap items-center gap-x-4 gap-y-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <span aria-hidden className="text-xl">🐒</span>
             <div className="min-w-0">
               <div className="font-extrabold truncate" style={{ letterSpacing: "-0.03em" }}>Auto Empire OS</div>
               <div className="t-small truncate hidden sm:block" style={{ color: "hsl(var(--muted-fg))" }}>10 agent companies · one command deck</div>
@@ -87,7 +84,6 @@ export default function Page() {
       </header>
 
       <main className="mx-auto max-w-[1400px] px-3 sm:px-5 py-4 sm:py-6 space-y-4">
-        {/* hero */}
         <section className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-stretch">
           <div className="surface p-4 sm:p-6 flex flex-col justify-center gap-3">
             <h1 className="t-display">Sit back. The teams keep building.</h1>
@@ -102,28 +98,24 @@ export default function Page() {
             </div>
             <p className="t-small t-mono" style={{ color: "hsl(var(--muted-fg))" }}>writes STATE.json + HANDOFF.md + _bus/log.jsonl</p>
           </div>
-          <JungleScene world={world} activity={activity} status={status} />
+          <OpsHero logs={logs} running={!loading} />
         </section>
 
-        {/* KPI strip: 2 cols on phones, 4 on desktop */}
         <KpiStrip logs={logs} teamCount={TEAMS.length} />
 
-        {/* main deck */}
         <section className="grid gap-3 lg:grid-cols-[264px_minmax(0,1fr)_340px] items-start">
-          {/* teams: horizontal snap scroll on mobile, sidebar on desktop */}
           <nav aria-label="Teams" className="lg:sticky lg:top-[68px]">
             <h2 className="t-small font-bold mb-2 hidden lg:block" style={{ color: "hsl(var(--muted-fg))" }}>TEAMS</h2>
             <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1 -mx-3 px-3 lg:mx-0 lg:px-0"
               style={{ scrollSnapType: "x mandatory" }}>
               {TEAMS.map((t) => (
                 <div key={t.id} className="min-w-[240px] sm:min-w-[280px] lg:min-w-0" style={{ scrollSnapAlign: "start" }}>
-                  <TeamCard team={t} active={t.id === cur.id} onPick={() => { setCur(t); setWorld(t.world); }} />
+                  <TeamCard team={t} active={t.id === cur.id} status={statusOf(t)} onPick={() => { setCur(t); setWorld(t.world); }} />
                 </div>
               ))}
             </div>
           </nav>
 
-          {/* live feed */}
           <section aria-label="Live agent activity" className="min-w-0">
             <Card>
               <div className="flex items-center gap-2 mb-3">
@@ -136,7 +128,6 @@ export default function Page() {
             </Card>
           </section>
 
-          {/* detail */}
           <aside className="space-y-3 lg:sticky lg:top-[68px] min-w-0" aria-label="Selected team">
             <Card>
               <div className={`relative overflow-hidden rounded-[10px] border mb-3 world-${cur.world}-glow`}>
@@ -154,7 +145,10 @@ export default function Page() {
               <p className="t-small" style={{ color: "hsl(var(--muted-fg))" }}>
                 👑 {cur.master} · {cur.industry} · <span className="t-num">{cur.price}</span>
               </p>
-              <ol className="mt-3 space-y-1.5">
+              <div className="surface-2 px-2.5 py-2 mt-2 t-small t-mono" style={{ color: "hsl(var(--muted-fg))" }}>
+                {st ? (<>phase <b style={{ color: "hsl(var(--primary))" }}>{st.phase}</b> · task {st.taskIndex}/3 · {st.status}<br />next: {st.nextTask ?? "—"}{st.updated ? <><br />updated {String(st.updated).slice(0, 19).replace("T", " ")}</> : null}</>) : "reading live state…"}
+              </div>
+              <ol className="mt-2 space-y-1.5">
                 {cur.phases.map((p, i) => (
                   <li key={p} className="surface-2 px-2.5 py-2 t-small flex gap-2">
                     <span className="t-mono" style={{ color: "hsl(var(--primary))" }}>P{i}</span>
@@ -164,7 +158,7 @@ export default function Page() {
               </ol>
               <p className="t-small t-num mt-2" style={{ color: "hsl(var(--muted-fg))" }}>KPI · {cur.kpi.join(" · ")}</p>
             </Card>
-            <Approvals logs={logs} />
+            <Approvals logs={logs} onApproved={refresh} />
             <Card>
               <h2 className="t-h2">Future picks</h2>
               <ul className="mt-2 space-y-2">
