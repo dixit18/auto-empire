@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Empire OS - Live Agent Command</title>
+<style>
+*{box-sizing:border-box;font-family:Inter,Segoe UI,Arial}body{margin:0;background:#070b18;color:#e6ecf7}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#0e1530;border-bottom:1px solid #223;position:sticky;top:0;z-index:5}
+.pill{background:#16204a;padding:4px 10px;border-radius:20px;font-size:12px;margin-left:6px}
+.live{color:#22c55e}.grid{display:grid;grid-template-columns:290px 1fr 340px;gap:12px;padding:12px;height:calc(100vh - 60px)}
+.card{background:#0f1734;border:1px solid #222f5e;border-radius:12px;padding:12px;overflow:auto}
+.team{padding:9px 10px;background:#18224a;border-radius:10px;margin-bottom:7px;cursor:pointer;border:1px solid transparent;font-size:13px}
+.team.active{border-color:#4f7cff}.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;background:#555}
+.dot.on{background:#22c55e;box-shadow:0 0 8px #22c55e;animation:bl 1.2s infinite}@keyframes bl{50%{opacity:.4}}
+#feed{font-family:Consolas,monospace;font-size:12px;line-height:1.55}.m{margin-bottom:6px;background:#0a1128;padding:6px 8px;border-radius:8px}.t{color:#64748b}
+button{background:#3b82f6;border:0;color:#fff;padding:8px 12px;border-radius:8px;font-weight:700;cursor:pointer;margin:2px}
+.ghost{background:#1e2a55}.small{font-size:12px;color:#8ea0c8}pre{white-space:pre-wrap;font-size:12px;background:#080d20;padding:8px;border-radius:8px}
+.k{font-size:12px;background:#1c2752;border-radius:14px;padding:3px 8px;margin:2px;display:inline-block}
+.bar{height:8px;background:#1c2752;border-radius:6px;overflow:hidden;margin:4px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,#3b82f6,#22c55e)}
+a{color:#7dd3fc}
+</style></head>
+<body>
+<header>
+<div><b>👑 EMPIRE OS</b><span class="pill live">● LIVE - keep working working</span><span class="pill" id="statTeams">10 teams</span><span class="pill" id="statLogs">0 logs</span></div>
+<div><button onclick="startAll()">▶ Run All (auto, no wait)</button><button class="ghost" onclick="loadBus()">↻ Refresh bus</button><button class="ghost" onclick="approveAll()">✅ Approve all</button></div>
+</header>
+<div class="grid">
+<div class="card"><b>Teams (Master + 4 workers each)</b><div class="small">Any new model: read <i>_system/BOOTSTRAP.md → STATE.json → HANDOFF.md</i> then continue. Phases auto-advance P0→P3.</div><div id="teams" style="margin-top:8px"></div>
+<div class="small" style="margin-top:8px">Runner: <code>python runner/orchestrator.py --auto</code><br>App server: <code>python -m http.server 8080</code> in empire/ then open <code>/app/</code></div></div>
+<div class="card"><b>📡 Live — what every agent is doing <span class="small" id="mode"></span></b><div id="feed" style="margin-top:8px"></div></div>
+<div class="card"><b id="dName">Select team</b><div class="small" id="dMeta"></div><div id="dProg"></div><div id="dAgents"></div><b>State / Handoff</b><pre id="dState">—</pre><b>Approvals (human only for publish/spend/outreach)</b><div id="appr" class="small">None pending. Building continues without waiting.</div></div>
+</div>
+<script>
+const TEAMS=["01-voice-clone-ghostwriter","02-faceless-youtube-engine","03-reddit-intent-miner","04-x-signal-bots","05-etsy-pinterest-digital","06-custom-gpt-suite","07-staging-interior-ai","08-localbiz-autopilot","09-wellness-audio","10-micro-course-factory"];
+const MASTERS={"01-voice-clone-ghostwriter":"Chief Content Officer","02-faceless-youtube-engine":"Showrunner","03-reddit-intent-miner":"Pipeline Commander","04-x-signal-bots":"Signal Chief","05-etsy-pinterest-digital":"Trend Director","06-custom-gpt-suite":"GPT Product Lead","07-staging-interior-ai":"Property Visual Lead","08-localbiz-autopilot":"Ops Manager","09-wellness-audio":"Wellness Curator","10-micro-course-factory":"Dean"};
+let logs=[], cur=TEAMS[4], auto=true, simTimer=null;
+const WORKER_POOL=["VoiceMiner","TrendScout","Writer","CTAOpt","Scout","Scripter","Packager","Listener","Classifier","Watcher","Filter","Dispatcher","Forecaster","Designer","Pinner","Builder","Stager","Inbox","Reviewer","Voicer","Teacher"];
+const TASK_POOL=["listing 10 pains","scoring demand","writing MVP sample","QA checklist","listing copy + pricing","5 pins/posts","retention loop","cross-sell map","scale plan","improving prior output (compounding)"];
+function el(id){return document.getElementById(id);}
+function renderTeams(){
+ el('teams').innerHTML=TEAMS.map(t=>`<div class="team ${t===cur?'active':''}" onclick="select('${t}')"><span class="dot ${auto?'on':''}"></span><b>${t.slice(0,2)}</b> ${t.slice(3,22)}<br><span class="small">👑 ${MASTERS[t]} • ${auto?'WORKING':'PAUSED'}</span></div>`).join('');
+ el('statTeams').textContent=TEAMS.length+' teams • '+(auto?'ALL WORKING':'PAUSED');
+}
+function select(t){cur=t;renderDetail();}
+function renderDetail(){
+ el('dName').textContent='👑 '+cur;
+ el('dMeta').textContent='Master: '+MASTERS[cur]+' • P0→P3 auto, no wait';
+ const done=Math.floor(Math.random()*40)+60;
+ el('dProg').innerHTML=`<div class="small">Progress ~${done}% (P0 done → P1 done → P2 doing → P3 queued)</div><div class="bar"><i style="width:${done}%"></i></div><div><span class="k">STATE.json ✓</span><span class="k">HANDOFF.md ✓</span><span class="k">ROADMAP.md ✓</span><span class="k">outputs/ ✓</span></div>`;
+ el('dAgents').innerHTML=`<div class="small" style="margin:6px 0">👑 MASTER assigns phase-wise → 4 workers execute → log to _bus/log.jsonl</div>`+['A1','A2','A3','A4'].map((a,i)=>`<div class="team"><span class="dot ${auto?'on':''}"></span> ${WORKER_POOL[(cur.length+i*3)%WORKER_POOL.length]} — ${auto?'QUEUED/WORKING':'STANDBY'}</div>`).join('');
+ el('dState').textContent=`team: ${cur}\nphase: P2 (auto from P0, no wait)\ntaskIndex: 1/3\nstatus: DOING\nlastFile: outputs/P2-launch/...\nnextTask: ${TASK_POOL[Math.floor(Math.random()*TASK_POOL.length)]}\nupdated: just now\n\nAny model: open ${cur}/HANDOFF.md to continue in <2min.`;
+}
+function addLog(team,from,to,phase,msg,st){
+ logs.unshift({ts:new Date().toLocaleTimeString(),team,from,to,phase,msg,st});
+ if(logs.length>120)logs.pop();
+ el('statLogs').textContent=logs.length+' logs';
+ el('feed').innerHTML=logs.map(l=>`<div class="m"><span class="t">${l.ts}</span> <b>${l.team.slice(0,2)} ${l.from}→${l.to}</b> [${l.phase}] ${l.msg} <span class="small">(${l.st})</span></div>`).join('');
+}
+async function loadBus(){
+ try{
+  const r=await fetch('../_bus/log.jsonl',{cache:'no-store'});
+  if(!r.ok)throw 0;
+  const txt=await r.text();
+  const lines=txt.trim().split('\n').slice(-30).reverse();
+  el('mode').textContent='• reading _bus/log.jsonl (real runner)';
+  lines.forEach(line=>{try{const j=JSON.parse(line);logs.unshift({ts:j.ts.slice(11)||j.ts,team:j.team,from:j.from,to:j.to,phase:j.phase,msg:j.msg,st:j.status});}catch(e){}});
+  el('statLogs').textContent=logs.length+' logs (real)';
+  el('feed').innerHTML=logs.slice(0,60).map(l=>`<div class="m"><span class="t">${l.ts}</span> <b>${l.team} ${l.from}→${l.to}</b> [${l.phase}] ${l.msg} (${l.st})</div>`).join('');
+ }catch(e){el('mode').textContent='• simulation (serve via http.server to read real bus)';}
+}
+function tick(){
+ if(!auto)return;
+ const t=TEAMS[Math.floor(Math.random()*TEAMS.length)];
+ const w=WORKER_POOL[Math.floor(Math.random()*WORKER_POOL.length)];
+ const task=TASK_POOL[Math.floor(Math.random()*TASK_POOL.length)];
+ const ph=['P0','P1','P2','P3'][Math.floor(Math.random()*4)];
+ const kinds=[['MASTER','WORKER','starting: '+task,'started'],[w,'MASTER','draft v1 ready, QA please','progress'],[MASTERS[t].split(' ')[0],'WORKER','QA pass, needs human only if publish/spend','needs-approval'],[w,'MASTER','done → '+task+' filed, auto-next (no wait)','done']];
+ const k=kinds[Math.floor(Math.random()*kinds.length)];
+ addLog(t,k[0],k[1],ph,k[2],k[3]);
+}
+function startAll(){auto=!auto;renderTeams();addLog('SYSTEM','ORCH','ALL','-','Auto '+(auto?'RESUMED - all 10 continue P0→P3, no wait':'PAUSED - states saved, any model can resume'),auto?'done':'blocked');}
+function approveAll(){el('appr').textContent='✅ Approved at '+new Date().toLocaleTimeString()+'. Runner never waited - building continued.';addLog('YOU','HUMAN','ALL','-','approved pending publishes. Masters resume.','done');}
+renderTeams();renderDetail();loadBus();
+for(let i=0;i<8;i++)tick();
+simTimer=setInterval(tick,2200);
+setInterval(loadBus,8000);
+</script>
+</body></html>

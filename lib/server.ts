@@ -3,7 +3,8 @@ import path from "path";
 import { TEAMS } from "./teams";
 
 export function empireRoot(): string | null {
-  const c = ["C:\\Users\\Dell\\Documents\\Testing project\\empire", path.join(process.cwd(), "..", "empire"), path.join(process.cwd(), "empire-data")];
+  // One repo runs everything: live system lives at ./empire next to the web app.
+  const c = [path.join(process.cwd(), "empire"), path.join(process.cwd(), "..", "empire"), "C:\\Users\\Dell\\Documents\\Testing project\\empire"];
   for (const p of c) try { if (fs.existsSync(path.join(p, "STATE.json"))) return p; } catch {}
   return null;
 }
@@ -28,13 +29,11 @@ export function readLiveState() {
   } catch { return null; }
 }
 export function readLiveLogs(limit = 50) {
-  const roots = [empireRoot(), path.join(process.cwd(), "empire-data")].filter(Boolean) as string[];
-  for (const root of roots) {
-    try {
-      const f = path.join(root, "_bus", "log.jsonl");
-      if (!fs.existsSync(f)) continue;
-      return fs.readFileSync(f, "utf8").trim().split("\n").slice(-limit).reverse().map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-    } catch { /* next root */ }
-  }
-  return [];
+  const root = empireRoot();
+  if (!root) return [];
+  try {
+    const f = path.join(root, "_bus", "log.jsonl");
+    if (!fs.existsSync(f)) return [];
+    return fs.readFileSync(f, "utf8").trim().split("\n").slice(-limit).reverse().map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+  } catch { return []; }
 }

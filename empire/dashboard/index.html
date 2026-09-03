@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wealth Empire - Command Center</title>
+<style>
+*{box-sizing:border-box;font-family:Inter,Segoe UI,Arial,sans-serif}body{margin:0;background:#0b1020;color:#e8ecf5;display:flex;height:100vh}
+aside{width:300px;background:#111834;padding:16px;overflow-y:auto;border-right:1px solid #223}
+main{flex:1;padding:20px;overflow-y:auto}
+h1{font-size:20px;margin:0 0 4px}.sub{color:#8ea0c8;font-size:13px;margin-bottom:16px}
+.team{padding:10px 12px;border-radius:10px;margin-bottom:8px;background:#1a2340;cursor:pointer;border:1px solid transparent}
+.team.active{border-color:#5b8cff;background:#1e2a52}.team .row{display:flex;justify-content:space-between;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}.idle{background:#6b7280}.working{background:#22c55e;box-shadow:0 0 8px #22c55e;animation:pulse 1.2s infinite}.paused{background:#f59e0b}
+@keyframes pulse{50%{opacity:.5}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:#131b36;border:1px solid #24305c;border-radius:12px;padding:14px}
+.card h3{margin:0 0 8px;font-size:15px}
+#log{height:320px;overflow-y:auto;background:#070b18;border-radius:10px;padding:10px;font-family:Consolas,monospace;font-size:12.5px;line-height:1.5}
+.msg{margin-bottom:6px}.msg b{color:#7dd3fc}.time{color:#64748b;margin-right:6px}
+button{background:#3b82f6;border:0;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;margin-right:8px;font-weight:600}
+button.ghost{background:#1f2a4d}button:disabled{opacity:.5}
+.phase{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+.phase input{transform:scale(1.2)}
+.kpi{display:inline-block;background:#1f2a4d;border-radius:20px;padding:4px 10px;font-size:12px;margin:2px}
+.agent{display:flex;justify-content:space-between;background:#0f1630;padding:8px 10px;border-radius:8px;margin:6px 0;font-size:13px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+a{color:#7dd3fc}
+</style>
+</head>
+<body>
+<aside>
+<h1>💰 Wealth Empire</h1>
+<div class="sub">10 teams • 1 master each • live view<br><a href="#" onclick="openReport();return false">R&D Report</a> • <a href="#" onclick="openSys();return false">Agent System</a></div>
+<div id="teams"></div>
+<div class="sub" style="margin-top:12px">Tip: start with ONE team. Don't run 10 day 1. Human approves before publish/payment.</div>
+</aside>
+<main>
+<div class="topbar">
+<div><h1 id="tName">Select a team</h1><div class="sub" id="tMeta"></div></div>
+<div><button id="btnStart" onclick="toggle()">▶ Start Team</button><button class="ghost" onclick="approve()">✅ Approve Pending</button></div>
+</div>
+<div class="grid">
+<div class="card"><h3>👑 Master + Sub-Agents</h3><div id="agents"></div><div style="margin-top:8px" id="kpis"></div></div>
+<div class="card"><h3>📋 Phases (master assigns phase-wise)</h3><div id="phases"></div></div>
+</div>
+<div class="card" style="margin-top:16px"><h3>📡 Live Agent Activity — who is doing what</h3><div id="log"></div></div>
+</main>
+<script>
+const TEAMS=[
+{id:"01",name:"01 • Voice-Clone Ghostwriter",ind:"Creator Economy",master:"Chief Content Officer",workers:["VoiceMiner - builds voice.json","TrendScout - last30days signals","GhostWriter - drafts threads","CTAOptimizer - reply CTAs"],kpi:["$49-149/mo","60 subs=$1740","Voice match >85%"],phases:["P0 Validation: 10 founder replies","P1 MVP SMS bot Twilio+OpenAI","P2 Launch PH + PDF lead magnet","P3 Scale LinkedIn + referrals"]},
+{id:"02",name:"02 • Faceless YouTube Engine",ind:"Media",master:"Showrunner",workers:["TrendScout - top 3 ideas/day","Scripter - hook+retention script","Packager - titles+thumbnail","Repurposer - Shorts+X+news"],kpi:["$2400-4500/mo Shorts","CTR>4%","2 posts/day"],phases:["P0 Pick niche (finance scams)","P1 Ship 30 Shorts","P2 2 long/week + affiliate","P3 Sponsor at 10k subs"]},
+{id:"03",name:"03 • Reddit Intent Miner",ind:"B2B SaaS",master:"Pipeline Commander",workers:["Listener - scrapes 20 subs","Classifier - High/Med/Low","ReplyDrafter - value-first reply","Tracker - upvotes→calls"],kpi:["$99-299/seat","20 clients=$5k","10 high-intent/wk"],phases:["P0 20 subs + 30 keywords","P1 Auto PRAW+GPT","P2 3 betas → paid","P3 Email sequencing $299"]},
+{id:"04",name:"04 • X Signal Bots",ind:"Fintech",master:"Signal Chief",workers:["Watcher - WebSocket handles","Filter AI - <1s score","Dispatcher - TG/Discord alert","RiskGuard - caps+disclaimer"],kpi:["$49-499/mo","Latency <1s","Boring > crypto LTV"],phases:["P0 1 vertical (NFL) weekend bot","P1 10 free, speed proof","P2 Paid $49 Whop","P3 MCP + $299 bridge"]},
+{id:"05",name:"05 • Etsy Pinterest Digital",ind:"E-commerce",master:"Trend Director",workers:["Forecaster - Pinterest Trends US","Designer - Canva mockups","SEOlister - long-tail titles","Pinner - 2-3 pins/day Tailwind"],kpi:["Bundles $12-35","95% margin","600 sales/pack/yr"],phases:["P0 1 collection (ADHD moms) 5 listings","P1 Pin 60-90d early","P2 Bundle $18 + wedding $25","P3 Email free→$197 master"]},
+{id:"06",name:"06 • Custom GPT Suite",ind:"AI Tools",master:"GPT Product Lead",workers:["NicheResearcher - painful workflow","Builder - instructions+tests","Distributor - Store+Gumroad","Success - B2B retain"],kpi:["$29 + $149 B2B","$3528/6mo path","Preview→paid 12-18%"],phases:["P0 2-3 GPTs Store+Gumroad","P1 Demos $300-1200","P2 Outreach 5-8x$149","P3 10 GPT cross-sell $8k+"]},
+{id:"07",name:"07 • Staging Interior AI",ind:"PropTech",master:"Property Visual Lead",workers:["Stager AI - 3 variants","Lister - Airbnb desc","Distributor - before/after X","Ops - GPU <$0.30"],kpi:["$29/mo + $99 packs","Share >15%","99% margin model"],phases:["P0 10 free stages 1 city","P1 Boring stack Replicate","P2 Agent FB groups","P3 Realtor $49 white-label"]},
+{id:"08",name:"08 • LocalBiz Autopilot",ind:"Local Services",master:"Ops Manager",workers:["InboxAgent - summaries+drafts","Reviewer - on-brand replies","Booker - calendar+reminders","Reporter - ROI sheet"],kpi:["$199-499/mo","Response <60s","10 clients=$4k"],phases:["P0 1 niche salons trial","P1 GHL+Twilio 2 betas","P2 $199/$499 outreach","P3 Productize + referrals"]},
+{id:"09",name:"09 • Wellness Audio",ind:"Wellness",master:"Wellness Curator",workers:["ScriptWriter - 800w scripts","Voicer - ElevenLabs mix","Bundler - audio+tracker","Nurturer - $47 challenge"],kpi:["$12 pack + $19/mo","Repeat 7d","Refund <10%"],phases:["P0 1 avatar 20 emails","P1 10-track $12 TikTok","P2 Membership weekly","P3 Coach white-label $77+"]},
+{id:"10",name:"10 • Micro-Course Factory",ind:"EdTech",master:"Dean",workers:["Researcher - urgent pain","Teacher - 6x15min + Notion","TA - Discord + FAQ bot","Marketer - sample→$197"],kpi:["$29 course","$19/mo community","Completion >40%"],phases:["P0 Pre-sell 10x$19","P1 Film 10 days Gumroad","P2 Build in public","P3 Course→templates→group"]},
+];
+let cur=null,timer=null,running={};
+const SCRIPTS=[
+["{M}","→ {W}: starting {P}. Output to bus."],
+["{W}","reading inputs… found 12 candidates, filtering…"],
+["{W}","draft v1 ready. Confidence {C}%. Requesting MASTER QA."],
+["{M}","QA: {Q}. {W} revise once, then needs human approval."],
+["YOU","✅ Approved. {W} → publish / ship."],
+["{W}","shipped. Logged result. Learning for next run (compounding)."],
+];
+function renderTeams(){
+ const el=document.getElementById('teams');el.innerHTML='';
+ TEAMS.forEach(t=>{
+  const st=running[t.id]?'working':(cur===t.id?'idle':'idle');
+  const d=document.createElement('div');d.className='team'+(cur===t.id?' active':'');
+  d.innerHTML=`<div class="row"><span><span class="dot ${running[t.id]?'working':'idle'}"></span><b>${t.name}</b></span></div><div class="sub">${t.ind} • ${running[t.id]?'WORKING':'IDLE'}</div>`;
+  d.onclick=()=>select(t.id);el.appendChild(d);
+ });
+}
+function select(id){
+ cur=id;const t=TEAMS.find(x=>x.id===id);
+ document.getElementById('tName').textContent=t.name;
+ document.getElementById('tMeta').textContent=t.ind+' • Master: '+t.master;
+ document.getElementById('agents').innerHTML=`<div class="agent"><span>👑 ${t.master} (MASTER)</span><span>${running[id]?'WORKING':'IDLE'}</span></div>`+t.workers.map(w=>`<div class="agent"><span>🤖 ${w}</span><span>${running[id]?'QUEUED':'STANDBY'}</span></div>`).join('');
+ document.getElementById('kpis').innerHTML=t.kpi.map(k=>`<span class="kpi">${k}</span>`).join('');
+ document.getElementById('phases').innerHTML=t.phases.map((p,i)=>`<label class="phase"><input type="checkbox" ${i===0?'':''}/> ${p}</label>`).join('');
+ document.getElementById('btnStart').textContent=running[id]?'⏸ Pause Team':'▶ Start Team';
+ log(`<span class="time">${now()}</span><b>SYSTEM</b> selected ${t.name}. Master ready. Press Start to watch agents talk.`);
+ renderTeams();
+}
+function now(){return new Date().toLocaleTimeString();}
+function log(h){const el=document.getElementById('log');const d=document.createElement('div');d.className='msg';d.innerHTML=h;el.prepend(d);}
+function toggle(){
+ if(!cur) return alert('Select a team left first');
+ if(running[cur]){running[cur]=false;clearInterval(timer);log(`<span class="time">${now()}</span><b>${cur}-MASTER</b> paused. Waiting human.`);}
+ else{running[cur]=true;log(`<span class="time">${now()}</span><b>${cur}-MASTER</b> started Phase-wise plan. Assigning to workers…`);timer=setInterval(tick,1800);}
+ select(cur);
+}
+function tick(){
+ const t=TEAMS.find(x=>x.id===cur);if(!t||!running[cur])return;
+ const s=SCRIPTS[Math.floor(Math.random()*SCRIPTS.length)];
+ const w=t.workers[Math.floor(Math.random()*t.workers.length)].split(' - ')[0];
+ const p=t.phases[Math.floor(Math.random()*t.phases.length)].split(':')[0];
+ const txt=s[1].replace('{W}',w).replace('{P}',p).replace('{C}',70+Math.floor(Math.random()*28)).replace('{Q}',['voice match 88% - good','hook weak, add number','CTA missing benefit, fix',' Looks non-spammy, ok'][Math.floor(Math.random()*4)]);
+ log(`<span class="time">${now()}</span><b>${s[0].replace('{M}',t.master.split(' ')[0]).replace('{W}',w)}</b> ${txt}`);
+}
+function approve(){if(!cur)return alert('Select team');log(`<span class="time">${now()}</span><b>YOU</b> ✅ approved pending task for ${cur}. Master resumes.`);}
+function openReport(){alert('Open file: empire/R&D-REPORT.md - full X/Reddit/Pinterest research with revenue proof.');}
+function openSys(){alert('Open file: empire/AGENT-SYSTEM.md - how to run masters with opencode Task tool.');}
+renderTeams();select('01');
+</script>
+</body>
+</html>

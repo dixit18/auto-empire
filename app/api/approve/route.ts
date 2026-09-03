@@ -5,7 +5,7 @@ import path from "path";
 export const dynamic = "force-dynamic";
 
 function empireRoot(): string | null {
-  const c = ["C:\\Users\\Dell\\Documents\\Testing project\\empire", path.join(process.cwd(), "..", "empire"), path.join(process.cwd(), "empire-data")];
+  const c = [path.join(process.cwd(), "empire"), "C:\\Users\\Dell\\Documents\\Testing project\\empire", path.join(process.cwd(), "..", "empire")];
   for (const p of c) try { if (fs.existsSync(path.join(p, "STATE.json"))) return p; } catch {}
   return null;
 }
