@@ -6,6 +6,8 @@ import TeamCard from "@/components/TeamCard";
 import KpiStrip, { type Log } from "@/components/KpiStrip";
 import LogFeed from "@/components/LogFeed";
 import { Button, Card, Chip } from "@/components/ui";
+import Approvals from "@/components/Approvals";
+import { Motif } from "@/components/motifs";
 import { TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
 
 const SIM_MSGS = [
@@ -137,11 +139,19 @@ export default function Page() {
           {/* detail */}
           <aside className="space-y-3 lg:sticky lg:top-[68px] min-w-0" aria-label="Selected team">
             <Card>
-              <div className="flex items-center justify-between gap-2">
-                <h2 className="t-h2 truncate">{cur.id} · {cur.name}</h2>
-                <Chip>{cur.world}</Chip>
+              <div className={`relative overflow-hidden rounded-[10px] border mb-3 world-${cur.world}-glow`}>
+                <div className="flex items-center gap-3 p-3">
+                  <span className="surface grid place-items-center shrink-0" style={{ width: 56, height: 56, borderRadius: 14, color: "hsl(var(--foreground))" }}>
+                    <Motif id={cur.id} className="h-9 w-9" />
+                  </span>
+                  <div className="min-w-0">
+                    <h2 className="t-h2 truncate">{cur.id} · {cur.name}</h2>
+                    <p className="t-small truncate" style={{ color: "hsl(var(--muted-fg))" }}>{cur.tagline}</p>
+                  </div>
+                  <span className="ml-auto shrink-0"><Chip>{cur.world}</Chip></span>
+                </div>
               </div>
-              <p className="t-small mt-1" style={{ color: "hsl(var(--muted-fg))" }}>
+              <p className="t-small" style={{ color: "hsl(var(--muted-fg))" }}>
                 👑 {cur.master} · {cur.industry} · <span className="t-num">{cur.price}</span>
               </p>
               <ol className="mt-3 space-y-1.5">
@@ -154,6 +164,7 @@ export default function Page() {
               </ol>
               <p className="t-small t-num mt-2" style={{ color: "hsl(var(--muted-fg))" }}>KPI · {cur.kpi.join(" · ")}</p>
             </Card>
+            <Approvals logs={logs} />
             <Card>
               <h2 className="t-h2">Future picks</h2>
               <ul className="mt-2 space-y-2">
