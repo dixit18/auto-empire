@@ -1,18 +1,37 @@
 "use client";
 import { motion } from "framer-motion";
 import type { Team } from "@/lib/teams";
-const EMOJI: Record<string, string> = { forest: "🌳", beach: "🏖️", sunset: "🌅", lagoon: "🌊" };
+import { EASE } from "./ui";
+
+const DOT: Record<string, string> = { forest: "#2f9e44", beach: "#0e9fd8", sunset: "#8b5cf6", lagoon: "#0d9488" };
+
+/* Dense 56px row like Linear: id mono · name · master · KPI · status. Full keyboard support. */
 export default function TeamCard({ team, active, onPick, status }: { team: Team; active: boolean; onPick: () => void; status?: string }) {
+  const live = (status ?? "WORKING").toUpperCase();
   return (
-    <motion.button whileHover={{ y: -4, rotate: -0.4 }} whileTap={{ scale: 0.98 }} onClick={onPick}
-      className={`text-left p-3 rounded-xl border card-hover w-full ${active ? "ring-2 ring-offset-2 ring-green-500" : ""}`}
-      style={{ background: "hsl(var(--card))" }}>
-      <div className="flex justify-between items-center">
-        <b>{EMOJI[team.world]} {team.id} • {team.name}</b>
-        <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-700 dark:text-green-300">● {status ?? "WORKING"}</span>
-      </div>
-      <div className="text-xs opacity-70 mt-1">👑 {team.master} • {team.industry} • {team.price}</div>
-      <div className="text-xs mt-1 opacity-80">{team.kpi.join(" • ")}</div>
+    <motion.button
+      initial={false} whileHover={{ x: 2 }} whileTap={{ scale: 0.99 }} transition={{ duration: 0.15, ease: EASE }}
+      onClick={onPick} aria-pressed={active}
+      className="w-full text-left rounded-[10px] border px-3 transition-colors"
+      style={{
+        minHeight: 60, display: "flex", alignItems: "center", gap: 10,
+        background: active ? "hsl(var(--card))" : "transparent",
+        borderColor: active ? "hsl(var(--primary))" : "hsl(var(--border))",
+        boxShadow: active ? "var(--shadow-1)" : "none",
+      }}>
+      <span aria-hidden style={{ width: 8, height: 8, borderRadius: 99, background: DOT[team.world] ?? DOT.forest, flexShrink: 0 }} />
+      <span className="min-w-0 flex-1">
+        <span className="flex items-baseline gap-2">
+          <span className="t-mono t-small" style={{ color: "hsl(var(--muted-fg))" }}>{team.id}</span>
+          <span className="font-bold truncate" style={{ fontSize: "0.9rem", letterSpacing: "-0.01em" }}>{team.name}</span>
+        </span>
+        <span className="t-small truncate block" style={{ color: "hsl(var(--muted-fg))" }}>
+          {team.master} · {team.industry} · <span className="t-num">{team.price}</span>
+        </span>
+      </span>
+      <span className="t-mono hidden xl:block" style={{ fontSize: "0.72rem", color: live === "WORKING" ? "hsl(var(--success))" : "hsl(var(--muted-fg))" }}>
+        ● {live}
+      </span>
     </motion.button>
   );
 }

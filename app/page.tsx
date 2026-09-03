@@ -1,100 +1,180 @@
 "use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ThemeBar from "@/components/ThemeBar";
 import JungleScene from "@/components/JungleScene";
 import TeamCard from "@/components/TeamCard";
+import KpiStrip, { type Log } from "@/components/KpiStrip";
+import LogFeed from "@/components/LogFeed";
+import { Button, Card, Chip } from "@/components/ui";
 import { TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
 
-type Log = { ts: string; team: string; from: string; to: string; phase: string; msg: string; status: string };
+const SIM_MSGS = [
+  "scoring demand × competition",
+  "draft v1 ready → master QA",
+  "compounding: improving prior output",
+  "writing listing copy + pricing",
+  "packing 5 pins for launch",
+  "updating HANDOFF + STATE",
+];
 
 export default function Page() {
   const [world, setWorld] = useState("forest");
   const [cur, setCur] = useState<Team>(TEAMS[4]);
   const [logs, setLogs] = useState<Log[]>([]);
+  const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => { document.documentElement.setAttribute("data-world", world); }, [world]);
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     try {
       const r = await fetch("/api/logs", { cache: "no-store" });
       const j = await r.json();
-      if (j.logs?.length) setLogs(j.logs);
-    } catch {}
-  }
+      if (Array.isArray(j.logs) && j.logs.length) setLogs(j.logs);
+    } catch { /* offline → keep heartbeat */ }
+    finally { setLoading(false); }
+  }, []);
+
   useEffect(() => {
     refresh();
-    const id = setInterval(refresh, 4000);
-    // local heartbeat so UI never looks stopped (even before runner)
+    const id = setInterval(refresh, 5000);
     const sim = setInterval(() => {
-      setLogs((p) => [{ ts: new Date().toLocaleTimeString(), team: TEAMS[Math.floor(Math.random() * 10)].dir.slice(0, 2), from: "MASTER", to: "WORKER", phase: ["P0","P1","P2","P3"][Math.floor(Math.random()*4)], msg: "compounding: improving prior output, no wait", status: "progress" }, ...p].slice(0, 60));
-    }, 5000);
+      setLogs((p) => [{
+        ts: new Date().toISOString(), team: TEAMS[Math.floor(Math.random() * TEAMS.length)].dir,
+        from: "MASTER", to: "WORKER", phase: ["P0", "P1", "P2", "P3"][Math.floor(Math.random() * 4)],
+        msg: SIM_MSGS[Math.floor(Math.random() * SIM_MSGS.length)], status: "progress",
+      }, ...p].slice(0, 60));
+    }, 7000);
     return () => { clearInterval(id); clearInterval(sim); };
-  }, []);
+  }, [refresh]);
 
   async function run(teamId?: string, autoAll?: boolean) {
     setBusy(true);
     try {
-      await fetch("/api/advance", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ teamId: teamId ?? cur.id, autoAll }) });
+      await fetch("/api/advance", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ teamId: teamId ?? cur.id, autoAll }),
+      });
       await refresh();
     } finally { setBusy(false); }
   }
 
+  const status = useMemo(() => {
+    if (!logs.length) return "bus idle — press Run ALL";
+    const l = logs[0];
+    return `${logs.length} events · latest ${l.from}→${l.to} [${l.phase}]`;
+  }, [logs]);
+
+  const activity = Math.min(1, logs.length / 40);
+
   return (
-    <main className={`min-h-screen p-4 md:p-6 ${world === "beach" ? "beach-bg" : "jungle-bg"}`}>
-      <div className="max-w-7xl mx-auto space-y-4">
-        <div className="flex flex-wrap justify-between gap-3 items-center">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-black">🐒 Auto Empire OS</h1>
-            <p className="text-sm opacity-70">10 agent-companies • 1 click runs everything • P0→P3 no wait • any model picks up via STATE + HANDOFF</p>
+    <div className="min-h-screen">
+      {/* sticky header */}
+      <header className="sticky top-0 z-20 border-b" style={{ background: "hsl(var(--background) / .85)", backdropFilter: "blur(12px)" }}>
+        <div className="mx-auto max-w-[1400px] px-3 sm:px-5 py-2.5 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span aria-hidden className="text-xl">🐒</span>
+            <div className="min-w-0">
+              <div className="font-extrabold truncate" style={{ letterSpacing: "-0.03em" }}>Auto Empire OS</div>
+              <div className="t-small truncate hidden sm:block" style={{ color: "hsl(var(--muted-fg))" }}>10 agent companies · one command deck</div>
+            </div>
+            <Chip tone="live"><span aria-hidden>●</span> LIVE</Chip>
           </div>
-          <ThemeBar world={world} setWorld={setWorld} />
+          <div className="ml-auto"><ThemeBar world={world} setWorld={setWorld} /></div>
         </div>
+      </header>
 
-        <JungleScene world={world} />
-
-        <div className="flex gap-2 flex-wrap">
-          <button disabled={busy} onClick={() => run(cur.id)} className="px-4 py-2 rounded-xl bg-green-600 text-white font-bold disabled:opacity-50">▶ Run {cur.id} next task</button>
-          <button disabled={busy} onClick={() => run(undefined, true)} className="px-4 py-2 rounded-xl bg-black text-white dark:bg-white dark:text-black font-bold disabled:opacity-50">⚡ Run ALL (no wait)</button>
-          <button onClick={refresh} className="px-4 py-2 rounded-xl border">↻ Refresh live</button>
-          <span className="text-xs opacity-70 self-center">Click = writes STATE + HANDOFF + _bus/log.jsonl directly. Runner keeps going.</span>
-        </div>
-
-        <div className="grid md:grid-cols-[300px_1fr_320px] gap-4">
-          <div className="space-y-2">
-            {TEAMS.map((t) => <TeamCard key={t.id} team={t} active={t.id === cur.id} onPick={() => { setCur(t); setWorld(t.world); }} />)}
+      <main className="mx-auto max-w-[1400px] px-3 sm:px-5 py-4 sm:py-6 space-y-4">
+        {/* hero */}
+        <section className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-stretch">
+          <div className="surface p-4 sm:p-6 flex flex-col justify-center gap-3">
+            <h1 className="t-display">Sit back. The teams keep building.</h1>
+            <p className="t-body max-w-prose" style={{ color: "hsl(var(--muted-fg))" }}>
+              Each company has a master agent and four workers running phase-wise plans — P0 validation through P3 scale —
+              with no waiting between phases. Press run and watch the bus.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button loading={busy} onClick={() => run(cur.id)}>▶ Run {cur.id} next task</Button>
+              <Button variant="ghost" disabled={busy} onClick={() => run(undefined, true)}>⚡ Run ALL — no wait</Button>
+              <Button variant="ghost" onClick={refresh}>↻ Refresh</Button>
+            </div>
+            <p className="t-small t-mono" style={{ color: "hsl(var(--muted-fg))" }}>writes STATE.json + HANDOFF.md + _bus/log.jsonl</p>
           </div>
+          <JungleScene world={world} activity={activity} status={status} />
+        </section>
 
-          <div className="rounded-xl border p-3" style={{ background: "hsl(var(--card))" }}>
-            <b>📡 Live — agents working {busy ? "(running…)" : ""}</b>
-            <div className="mt-2 space-y-1.5 max-h-[520px] overflow-auto font-mono text-xs">
-              {logs.length === 0 && <div className="opacity-60">Waiting for logs… click Run ALL.</div>}
-              {logs.map((l, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} className="p-2 rounded-lg bg-black/5 dark:bg-white/5">
-                  <span className="opacity-50">{String(l.ts).slice(0, 19)}</span> <b>{l.team} {l.from}→{l.to}</b> [{l.phase}] {l.msg} <i>({l.status})</i>
-                </motion.div>
+        {/* KPI strip: 2 cols on phones, 4 on desktop */}
+        <KpiStrip logs={logs} teamCount={TEAMS.length} />
+
+        {/* main deck */}
+        <section className="grid gap-3 lg:grid-cols-[264px_minmax(0,1fr)_340px] items-start">
+          {/* teams: horizontal snap scroll on mobile, sidebar on desktop */}
+          <nav aria-label="Teams" className="lg:sticky lg:top-[68px]">
+            <h2 className="t-small font-bold mb-2 hidden lg:block" style={{ color: "hsl(var(--muted-fg))" }}>TEAMS</h2>
+            <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1 -mx-3 px-3 lg:mx-0 lg:px-0"
+              style={{ scrollSnapType: "x mandatory" }}>
+              {TEAMS.map((t) => (
+                <div key={t.id} className="min-w-[240px] sm:min-w-[280px] lg:min-w-0" style={{ scrollSnapAlign: "start" }}>
+                  <TeamCard team={t} active={t.id === cur.id} onPick={() => { setCur(t); setWorld(t.world); }} />
+                </div>
               ))}
             </div>
-          </div>
+          </nav>
 
-          <div className="space-y-3">
-            <div className="rounded-xl border p-3" style={{ background: "hsl(var(--card))" }}>
-              <b>👑 {cur.id} • {cur.name}</b>
-              <div className="text-xs opacity-70">Master: {cur.master} • {cur.industry} • {cur.price} • world: {cur.world}</div>
-              <div className="mt-2 space-y-1 text-sm">{cur.phases.map((p) => <div key={p} className="px-2 py-1 rounded bg-black/5 dark:bg-white/5">✓ {p} → auto-next</div>)}</div>
-              <div className="text-xs mt-2 opacity-70">KPI: {cur.kpi.join(" • ")}</div>
-            </div>
-            <div className="rounded-xl border p-3" style={{ background: "hsl(var(--card))" }}>
-              <b>💡 Future picks (creative backlog)</b>
-              {FUTURE_IDEAS.map((f) => <div key={f.t} className="mt-2 text-sm"><b>{f.t}</b><div className="text-xs opacity-70">{f.d}</div></div>)}
-            </div>
-            <div className="rounded-xl border p-3 text-xs opacity-80" style={{ background: "hsl(var(--card))" }}>
-              New model? Read <code>empire/_system/BOOTSTRAP.md → STATE.json → HANDOFF.md</code>. Then <code>python runner/orchestrator.py --auto</code>. UI + runner share the same bus — nothing restarts.
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+          {/* live feed */}
+          <section aria-label="Live agent activity" className="min-w-0">
+            <Card>
+              <div className="flex items-center gap-2 mb-3">
+                <h2 className="t-h2">Live — what every agent is doing</h2>
+                {busy && <Chip tone="warn">running…</Chip>}
+              </div>
+              <div className="max-h-[60vh] lg:max-h-[560px] overflow-auto pr-1">
+                <LogFeed logs={logs} loading={loading} onRunAll={() => run(undefined, true)} />
+              </div>
+            </Card>
+          </section>
+
+          {/* detail */}
+          <aside className="space-y-3 lg:sticky lg:top-[68px] min-w-0" aria-label="Selected team">
+            <Card>
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="t-h2 truncate">{cur.id} · {cur.name}</h2>
+                <Chip>{cur.world}</Chip>
+              </div>
+              <p className="t-small mt-1" style={{ color: "hsl(var(--muted-fg))" }}>
+                👑 {cur.master} · {cur.industry} · <span className="t-num">{cur.price}</span>
+              </p>
+              <ol className="mt-3 space-y-1.5">
+                {cur.phases.map((p, i) => (
+                  <li key={p} className="surface-2 px-2.5 py-2 t-small flex gap-2">
+                    <span className="t-mono" style={{ color: "hsl(var(--primary))" }}>P{i}</span>
+                    <span>{p} <span style={{ color: "hsl(var(--muted-fg))" }}>→ auto-next</span></span>
+                  </li>
+                ))}
+              </ol>
+              <p className="t-small t-num mt-2" style={{ color: "hsl(var(--muted-fg))" }}>KPI · {cur.kpi.join(" · ")}</p>
+            </Card>
+            <Card>
+              <h2 className="t-h2">Future picks</h2>
+              <ul className="mt-2 space-y-2">
+                {FUTURE_IDEAS.map((f) => (
+                  <li key={f.t} className="t-small">
+                    <b>{f.t}</b>
+                    <span className="block" style={{ color: "hsl(var(--muted-fg))" }}>{f.d}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+            <Card>
+              <h2 className="t-h2">New model pickup</h2>
+              <p className="t-small mt-1" style={{ color: "hsl(var(--muted-fg))" }}>
+                Read <code className="t-mono">empire/_system/BOOTSTRAP.md → STATE.json → HANDOFF.md</code>,
+                then <code className="t-mono">python runner/orchestrator.py --auto</code>. UI and runner share the bus — nothing restarts.
+              </p>
+            </Card>
+          </aside>
+        </section>
+      </main>
+    </div>
   );
 }
