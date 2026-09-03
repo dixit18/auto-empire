@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import ThemeBar from "@/components/ThemeBar";
-import OpsHero from "@/components/OpsHero";
+import WorldMap from "@/components/WorldMap";
 import TeamCard from "@/components/TeamCard";
 import KpiStrip, { type Log } from "@/components/KpiStrip";
 import LogFeed from "@/components/LogFeed";
@@ -84,27 +85,29 @@ export default function Page() {
       </header>
 
       <main className="mx-auto max-w-[1400px] px-3 sm:px-5 py-4 sm:py-6 space-y-4">
-        <section className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-stretch">
-          <div className="surface p-4 sm:p-6 flex flex-col justify-center gap-3">
-            <h1 className="t-display">Sit back. The teams keep building.</h1>
-            <p className="t-body max-w-prose" style={{ color: "hsl(var(--muted-fg))" }}>
-              Each company has a master agent and four workers running phase-wise plans — P0 validation through P3 scale —
-              with no waiting between phases. Press run and watch the bus.
-            </p>
+        <section className="surface p-4 sm:p-5">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="min-w-0 flex-1" style={{ minWidth: 220 }}>
+              <h1 className="t-display">Sit back. The teams keep building.</h1>
+              <p className="t-body mt-1 max-w-prose" style={{ color: "hsl(var(--muted-fg))" }}>
+                Each company has a master agent and four workers running phase-wise plans — P0 validation through P3 scale.
+                Open any island to enter its world.
+              </p>
+            </div>
             <div className="flex flex-wrap gap-2">
-              <Button loading={busy} onClick={() => run(cur.id)}>▶ Run {cur.id} next task</Button>
-              <Button variant="ghost" disabled={busy} onClick={() => run(undefined, true)}>⚡ Run ALL — no wait</Button>
+              <Button loading={busy} onClick={() => run(cur.id)}>▶ Run {cur.id}</Button>
+              <Button variant="ghost" disabled={busy} onClick={() => run(undefined, true)}>⚡ Run ALL</Button>
               <Button variant="ghost" onClick={refresh}>↻ Refresh</Button>
             </div>
-            <p className="t-small t-mono" style={{ color: "hsl(var(--muted-fg))" }}>writes STATE.json + HANDOFF.md + _bus/log.jsonl</p>
           </div>
-          <OpsHero logs={logs} running={!loading} />
         </section>
+
+        <WorldMap logs={logs} cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} />
 
         <KpiStrip logs={logs} teamCount={TEAMS.length} />
 
         <section className="grid gap-3 lg:grid-cols-[264px_minmax(0,1fr)_340px] items-start">
-          <nav aria-label="Teams" className="lg:sticky lg:top-[68px]">
+          <nav aria-label="Teams" className="lg:sticky lg:top-[68px] min-w-0">
             <h2 className="t-small font-bold mb-2 hidden lg:block" style={{ color: "hsl(var(--muted-fg))" }}>TEAMS</h2>
             <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1 -mx-3 px-3 lg:mx-0 lg:px-0"
               style={{ scrollSnapType: "x mandatory" }}>
@@ -157,6 +160,9 @@ export default function Page() {
                 ))}
               </ol>
               <p className="t-small t-num mt-2" style={{ color: "hsl(var(--muted-fg))" }}>KPI · {cur.kpi.join(" · ")}</p>
+              <Link href={`/${cur.dir}`} className="btn btn-ghost mt-3 w-full justify-center" style={{ fontSize: "0.82rem" }}>
+                Enter {cur.id} world →
+              </Link>
             </Card>
             <Approvals logs={logs} onApproved={refresh} />
             <Card>

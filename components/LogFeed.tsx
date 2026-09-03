@@ -25,10 +25,10 @@ export default function LogFeed({ logs, loading, onRunAll }: { logs: Log[]; load
             className="surface-2 px-2.5 py-2 flex items-baseline gap-2">
             <span aria-hidden style={{ width: 7, height: 7, borderRadius: 99, background: TONE[l.status] ?? TONE.progress, flexShrink: 0, alignSelf: "center" }} />
             <span className="t-mono shrink-0" style={{ fontSize: "0.7rem", color: "hsl(var(--muted-fg))" }}>{String(l.ts).slice(0, 19)}</span>
-            <span className="t-small min-w-0">
+            <span className="t-small min-w-0 flex-1">
               <b className="t-mono" style={{ fontSize: "0.75rem" }}>{String(l.team).slice(0, 2)}</b>{" "}
               <span style={{ color: "hsl(var(--muted-fg))" }}>{l.from}→{l.to} · {l.phase}</span>{" "}
-              <span className="block sm:inline truncate">{l.msg}</span>
+              <span className="block truncate">{l.msg}</span>
             </span>
             <span className="chip ml-auto shrink-0 hidden sm:inline-flex">{l.status}</span>
           </motion.li>
