@@ -153,6 +153,8 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes ringpulse { 0% { box-shadow: 0 0 0 0 hsl(var(--success) / 0.45); } 100% { box-shadow: 0 0 0 12px transparent; } }
+.pulse-ring { animation: ringpulse 2.2s ease-out infinite; }
 @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
