@@ -104,9 +104,20 @@ export function MSteps(p: P) {
   </Base>;
 }
 
+/* 11 — Dropship: parcel plane (box that flies to buyers) */
+export function MParcel(p: P) {
+  return <Base {...p}>
+    <path d="M8 40l24-14 24 8-24 6z" fill="hsl(var(--primary) / .15)" />
+    <path d="M20 44v8l12 4v-8" opacity=".6" />
+    <path d="M44 34l8-8 4 2-8 8" />
+    <path d="M14 12l6 2M20 8l2 5" opacity=".6" />
+  </Base>;
+}
+
 export const MOTIFS: Record<string, (p: P) => React.ReactElement> = {
   "01": MGhostwriter, "02": MTube, "03": MListener, "04": MSignal, "05": MPin,
   "06": MSpark, "07": MHouse, "08": MShop, "09": MMoon, "10": MSteps,
+  "11": MParcel,
 };
 
 export function Motif({ id, className = "" }: { id: string; className?: string }) {

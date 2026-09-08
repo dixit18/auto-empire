@@ -16,6 +16,7 @@ TEAMS = [
  "01-voice-clone-ghostwriter","02-faceless-youtube-engine","03-reddit-intent-miner",
  "04-x-signal-bots","05-etsy-pinterest-digital","06-custom-gpt-suite",
  "07-staging-interior-ai","08-localbiz-autopilot","09-wellness-audio","10-micro-course-factory",
+ "11-dropshipping-lab",
 ]
 
 PHASE_TASKS = {

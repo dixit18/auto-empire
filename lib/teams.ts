@@ -10,6 +10,7 @@ export const TEAMS: Team[] = [
   { id: "08", dir: "08-localbiz-autopilot", name: "LocalBiz Autopilot", industry: "Local Services", master: "Ops Manager", crew: ["InboxAgent", "Reviewer", "Booker", "Reporter"], world: "lagoon", price: "$199-499/mo", kpi: ["<60s reply", "10 = $4k"], phases: ["P0 salons", "P1 GHL", "P2 outreach", "P3 productize"], tagline: "Missed call answered in 60s — jobs stop leaking." },
   { id: "09", dir: "09-wellness-audio", name: "Wellness Audio", industry: "Wellness", master: "Wellness Curator", crew: ["ScriptWriter", "Voicer", "Bundler", "Nurturer"], world: "forest", price: "$12 + $19/mo", kpi: ["repeat 7d", "<10% refund"], phases: ["P0 20 emails", "P1 10-track", "P2 member", "P3 white-label"], tagline: "Seven minutes to sleep — a ritual, not a playlist." },
   { id: "10", dir: "10-micro-course-factory", name: "Micro-Course Factory", industry: "EdTech", master: "Dean", crew: ["Researcher", "Teacher", "TA", "Marketer"], world: "sunset", price: "$29 + $19/mo", kpi: [">40% finish", "NPS"], phases: ["P0 presell 10", "P1 film 10d", "P2 launch", "P3 stack"], tagline: "One problem, 90 minutes, templates included." },
+  { id: "11", dir: "11-dropshipping-lab", name: "Dropshipping Lab", industry: "Commerce", master: "Drop Commander", crew: ["ProductScout", "Sourcer", "CreativeDirector", "MediaBuyer"], world: "beach", price: "$34.95 + refill", kpi: ["CAC ≤$13", "beROAS 1.6"], phases: ["P0 gates", "P1 samples", "P2 tests", "P3 scale"], tagline: "Yellow teeth to white in 14 days — refill forever." },
 ];
 export const FUTURE_IDEAS = [
   { t: "Voice Cloning for Podcasts", d: "1 voice note -> week of shorts + newsletter. Forest, parrot mascot.", world: "forest" },
@@ -24,7 +25,7 @@ export const FUTURE_IDEAS = [
 export const ISLANDS: Record<string, { x: number; y: number }> = {
   "01": { x: 10, y: 30 }, "02": { x: 24, y: 64 }, "03": { x: 38, y: 26 },
   "04": { x: 52, y: 62 }, "05": { x: 66, y: 24 }, "06": { x: 80, y: 58 },
-  "07": { x: 91, y: 28 }, "08": { x: 32, y: 86 }, "09": { x: 60, y: 87 },
-  "10": { x: 86, y: 85 },
+  "07": { x: 91, y: 28 },   "08": { x: 32, y: 86 }, "09": { x: 60, y: 87 },
+  "10": { x: 86, y: 85 }, "11": { x: 50, y: 10 },
 };
 export const HUB = { x: 50, y: 45 };
