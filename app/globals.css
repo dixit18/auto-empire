@@ -149,6 +149,11 @@
     animation: shimmer 1.4s infinite;
   }
 
+  .world-forest-glow { background: radial-gradient(ellipse at 50% 0%, rgb(46 125 79 / 0.16), transparent 60%); }
+.world-beach-glow { background: radial-gradient(ellipse at 50% 0%, rgb(11 110 153 / 0.16), transparent 60%); }
+.world-sunset-glow { background: radial-gradient(ellipse at 50% 0%, rgb(189 90 46 / 0.16), transparent 60%); }
+.world-lagoon-glow { background: radial-gradient(ellipse at 50% 0%, rgb(14 124 123 / 0.16), transparent 60%); }
+
   .barcode {
     background: repeating-linear-gradient(90deg, hsl(var(--foreground)) 0 2px, transparent 2px 4px, hsl(var(--foreground)) 4px 7px, transparent 7px 9px, hsl(var(--foreground)) 9px 10px, transparent 10px 14px);
   }

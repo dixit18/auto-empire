@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import AgentGraph from "@/components/AgentGraph";
+import Vault from "@/components/Vault";
 import LogFeed from "@/components/LogFeed";
 import Approvals from "@/components/Approvals";
 import { Button, Card, Chip } from "@/components/ui";
@@ -78,6 +79,8 @@ export default function TeamView({ team }: { team: Team }) {
         <h2 className="t-h2 mb-3">Who talks to whom — live thought path</h2>
         <AgentGraph team={team} logs={logs} />
       </Card>
+
+      <Vault team={team} />
 
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_340px] items-start">
         <Card className="min-w-0">
