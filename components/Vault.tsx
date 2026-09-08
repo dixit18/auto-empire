@@ -23,6 +23,7 @@ export default function Vault({ team }: { team: Team }) {
     return <Card><div className="t-kicker">§ The Vault</div><div className="skeleton mt-2" style={{ height: 120 }} /></Card>;
 
   const films = files.filter((f) => f.path.endsWith(".mp4"));
+  const audio = files.filter((f) => f.path.endsWith(".mp3"));
   const pics = files.filter((f) => /\.(png|jpe?g)$/.test(f.path) && !/seg\d/.test(f.path));
   const docs = files.filter((f) => /\.(md|txt|html|json)$/.test(f.path));
   const url = (p: string) => `/api/file?path=${encodeURIComponent(p)}`;
@@ -46,6 +47,23 @@ export default function Vault({ team }: { team: Team }) {
                   <span className="truncate">{name(f.path)}</span><span className="shrink-0">{kb(f.size)}</span>
                 </figcaption>
               </figure>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {audio.length > 0 && (
+        <div className="mt-4">
+          <div className="t-kicker mb-2">Audio</div>
+          <div className="space-y-2">
+            {audio.map((f) => (
+              <div key={f.path} className="surface-2 p-2.5">
+                <div className="t-small flex justify-between gap-2 mb-1.5">
+                  <b className="truncate">{prettyDoc(name(f.path))}</b>
+                  <span className="t-mono shrink-0" style={{ color: "hsl(var(--muted-fg))" }}>{kb(f.size)}</span>
+                </div>
+                <audio src={url(f.path)} controls preload="metadata" style={{ width: "100%" }} />
+              </div>
             ))}
           </div>
         </div>

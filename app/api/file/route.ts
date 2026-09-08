@@ -5,7 +5,7 @@ import { empireRoot } from "@/lib/server";
 export const dynamic = "force-dynamic";
 
 const TYPES: Record<string, string> = {
-  ".mp4": "video/mp4", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+  ".mp4": "video/mp4", ".mp3": "audio/mpeg", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
   ".html": "text/html; charset=utf-8", ".md": "text/plain; charset=utf-8",
   ".txt": "text/plain; charset=utf-8", ".json": "application/json",
 };
