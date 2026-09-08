@@ -71,44 +71,64 @@ export default function Page() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b" style={{ background: "hsl(var(--background) / .85)", backdropFilter: "blur(12px)" }}>
-        <div className="mx-auto max-w-[1400px] px-3 sm:px-5 py-2.5 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="min-w-0">
-              <div className="font-extrabold truncate" style={{ letterSpacing: "-0.03em" }}>Auto Empire OS</div>
-              <div className="t-small truncate hidden sm:block" style={{ color: "hsl(var(--muted-fg))" }}>10 agent companies · one command deck</div>
-            </div>
-            <Chip tone="live"><span aria-hidden>●</span> LIVE</Chip>
-          </div>
-          <div className="ml-auto"><ThemeBar world={world} setWorld={setWorld} /></div>
+      {/* nameplate */}
+      <header className="sticky top-0 z-20 border-b" style={{ background: "hsl(var(--background) / .92)", backdropFilter: "blur(12px)" }}>
+        <div className="mx-auto max-w-[1400px] px-3 sm:px-5 pt-2 flex items-end gap-3">
+          <span className="t-small t-mono hidden sm:block pb-2" style={{ color: "hsl(var(--muted-fg))" }}>Vol. VII — Sep 2026</span>
+          <span className="mx-auto text-center font-extrabold" style={{ fontFamily: "var(--font-serif)", fontSize: "1.6rem", letterSpacing: "-0.02em", lineHeight: 1 }}>
+            The Empire <span style={{ color: "hsl(var(--primary))" }}>·</span> <span className="italic font-medium">Agent World</span>
+          </span>
+          <span className="flex items-center gap-2 pb-1.5">
+            <span className="barcode hidden md:block" style={{ width: 64, height: 22 }} aria-hidden />
+            <ThemeBar />
+          </span>
         </div>
+        <div className="rule-double mx-3 sm:mx-5" />
+        <nav className="mx-auto max-w-[1400px] px-3 sm:px-5 py-1.5 flex gap-4 t-small font-bold" aria-label="Sections"
+          style={{ color: "hsl(var(--muted-fg))" }}>
+          <a href="#world">The World</a><a href="#numbers">By the Numbers</a><a href="#newsroom">Newsroom</a><a href="#issues">Coming Issues</a>
+          <span className="ml-auto hidden sm:inline"><Chip tone="live"><span aria-hidden>●</span> LIVE</Chip></span>
+        </nav>
       </header>
 
-      <main className="mx-auto max-w-[1400px] px-3 sm:px-5 py-4 sm:py-6 space-y-4">
-        <section className="surface p-4 sm:p-5">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="min-w-0 flex-1" style={{ minWidth: 220 }}>
-              <h1 className="t-display">Sit back. The teams keep building.</h1>
-              <p className="t-body mt-1 max-w-prose" style={{ color: "hsl(var(--muted-fg))" }}>
-                Each company has a master agent and four workers running phase-wise plans — P0 validation through P3 scale.
-                Open any island to enter its world.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
+      <main className="mx-auto max-w-[1400px] px-3 sm:px-5 py-4 sm:py-6 space-y-6">
+        {/* cover story */}
+        <section className="grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] items-end">
+          <div>
+            <div className="t-kicker">The Cover Story</div>
+            <h1 className="t-display mt-1">Eleven crews.<br />One newsroom.</h1>
+            <p className="t-body dropcap mt-3 max-w-prose" style={{ color: "hsl(var(--muted-fg))" }}>
+              Each company in this empire keeps a master agent and four workers on a phase-wise plan — from validation
+              through scale — with no waiting between phases. What follows is the living record: every island below files
+              to one wire, and this page prints it as it happens. Open any island to enter its world.
+            </p>
+            <p className="t-small t-mono mt-2" style={{ color: "hsl(var(--muted-fg))" }}>
+              Reported by the agents themselves · Dateline: the bus · {logs.length} dispatches on record
+            </p>
+          </div>
+          <div className="surface p-4">
+            <div className="t-kicker">Press actions</div>
+            <div className="mt-2 flex flex-wrap gap-2">
               <Button loading={busy} onClick={() => run(cur.id)}>▶ Run {cur.id}</Button>
               <Button variant="ghost" disabled={busy} onClick={() => run(undefined, true)}>⚡ Run ALL</Button>
               <Button variant="ghost" onClick={refresh}>↻ Refresh</Button>
             </div>
+            <p className="t-small t-mono mt-2" style={{ color: "hsl(var(--muted-fg))" }}>writes STATE.json + HANDOFF.md + _bus/log.jsonl</p>
           </div>
         </section>
 
-        <WorldMap logs={logs} cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} />
+        <section id="world" className="scroll-mt-24">
+          <WorldMap logs={logs} cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} />
+        </section>
 
-        <KpiStrip logs={logs} teamCount={TEAMS.length} />
+        <section id="numbers" className="scroll-mt-24">
+          <div className="t-kicker mb-2">§ 02 — By the Numbers</div>
+          <KpiStrip logs={logs} teamCount={TEAMS.length} />
+        </section>
 
-        <section className="grid gap-3 lg:grid-cols-[264px_minmax(0,1fr)_340px] items-start">
-          <nav aria-label="Teams" className="lg:sticky lg:top-[68px] min-w-0">
-            <h2 className="t-small font-bold mb-2 hidden lg:block" style={{ color: "hsl(var(--muted-fg))" }}>TEAMS</h2>
+        <section id="newsroom" className="grid gap-3 lg:grid-cols-[264px_minmax(0,1fr)_340px] items-start scroll-mt-24">
+          <nav aria-label="Teams" className="lg:sticky lg:top-[104px] min-w-0">
+            <div className="t-kicker mb-2 hidden lg:block">§ 03 — Desks</div>
             <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1 -mx-3 px-3 lg:mx-0 lg:px-0"
               style={{ scrollSnapType: "x mandatory" }}>
               {TEAMS.map((t) => (
@@ -119,33 +139,32 @@ export default function Page() {
             </div>
           </nav>
 
-          <section aria-label="Live agent activity" className="min-w-0">
+          <div className="min-w-0">
+            <div className="t-kicker mb-2">§ 03 — The Wire, live</div>
             <Card>
               <div className="flex items-center gap-2 mb-3">
-                <h2 className="t-h2">Live — what every agent is doing</h2>
+                <h2 className="t-h2">What every agent is doing</h2>
                 {busy && <Chip tone="warn">running…</Chip>}
               </div>
               <div className="max-h-[60vh] lg:max-h-[560px] overflow-auto pr-1">
                 <LogFeed logs={logs} loading={loading} onRunAll={() => run(undefined, true)} />
               </div>
             </Card>
-          </section>
+          </div>
 
-          <aside className="space-y-3 lg:sticky lg:top-[68px] min-w-0" aria-label="Selected team">
+          <aside className="space-y-3 lg:sticky lg:top-[104px] min-w-0" aria-label="Selected team">
             <Card>
-              <div className={`relative overflow-hidden rounded-[10px] border mb-3 world-${cur.world}-glow`}>
-                <div className="flex items-center gap-3 p-3">
-                  <span className="surface grid place-items-center shrink-0" style={{ width: 56, height: 56, borderRadius: 14, color: "hsl(var(--foreground))" }}>
-                    <Motif id={cur.id} className="h-9 w-9" />
-                  </span>
-                  <div className="min-w-0">
-                    <h2 className="t-h2 truncate">{cur.id} · {cur.name}</h2>
-                    <p className="t-small truncate" style={{ color: "hsl(var(--muted-fg))" }}>{cur.tagline}</p>
-                  </div>
-                  <span className="ml-auto shrink-0"><Chip>{cur.world}</Chip></span>
+              <div className="flex items-center gap-3">
+                <span className="surface grid place-items-center shrink-0" style={{ width: 56, height: 56, borderRadius: 10, color: "hsl(var(--foreground))" }}>
+                  <Motif id={cur.id} className="h-9 w-9" />
+                </span>
+                <div className="min-w-0">
+                  <div className="t-kicker">Story № {cur.id}</div>
+                  <h2 className="t-h2 truncate">{cur.name}</h2>
                 </div>
               </div>
-              <p className="t-small" style={{ color: "hsl(var(--muted-fg))" }}>
+              <p className="t-small mt-2 italic" style={{ fontFamily: "var(--font-serif)", fontSize: "0.95rem" }}>“{cur.tagline}”</p>
+              <p className="t-small mt-1" style={{ color: "hsl(var(--muted-fg))" }}>
                 👑 {cur.master} · {cur.industry} · <span className="t-num">{cur.price}</span>
               </p>
               <div className="surface-2 px-2.5 py-2 mt-2 t-small t-mono" style={{ color: "hsl(var(--muted-fg))" }}>
@@ -166,21 +185,21 @@ export default function Page() {
             </Card>
             <Approvals logs={logs} onApproved={refresh} />
             <Card>
-              <h2 className="t-h2">Future picks</h2>
+              <div className="t-kicker" id="issues">§ 04 — Coming issues</div>
               <ul className="mt-2 space-y-2">
                 {FUTURE_IDEAS.map((f) => (
-                  <li key={f.t} className="t-small">
-                    <b>{f.t}</b>
+                  <li key={f.t} className="t-small rule-single pt-2">
+                    <b style={{ fontFamily: "var(--font-serif)", fontSize: "0.9rem" }}>{f.t}</b>
                     <span className="block" style={{ color: "hsl(var(--muted-fg))" }}>{f.d}</span>
                   </li>
                 ))}
               </ul>
             </Card>
             <Card>
-              <h2 className="t-h2">New model pickup</h2>
+              <div className="t-kicker">Colophon</div>
               <p className="t-small mt-1" style={{ color: "hsl(var(--muted-fg))" }}>
-                Read <code className="t-mono">empire/_system/BOOTSTRAP.md → STATE.json → HANDOFF.md</code>,
-                then <code className="t-mono">python runner/orchestrator.py --auto</code>. UI and runner share the bus — nothing restarts.
+                Set in Newsreader & Inter. Printed on pixels. New model joining? Read <code className="t-mono">empire/_system/BOOTSTRAP.md → STATE.json → HANDOFF.md</code>,
+                then <code className="t-mono">python runner/orchestrator.py --auto</code>.
               </p>
             </Card>
           </aside>

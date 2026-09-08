@@ -1,9 +1,10 @@
 import "./globals.css";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Newsreader } from "next/font/google";
 import Providers from "@/components/Providers";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap", weight: ["400", "500", "600"] });
+const serif = Newsreader({ subsets: ["latin"], variable: "--font-serif", display: "swap", style: ["normal", "italic"] });
 
 export const metadata = {
   title: "Auto Empire OS — 10 agent companies, one command deck",
@@ -11,14 +12,14 @@ export const metadata = {
 };
 
 function ThemeInit() {
-  const js = `(function(){try{var t=localStorage.getItem('empire-theme');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.classList.toggle('dark',t==='dark');document.documentElement.dataset.theme=t;}catch(e){}})();`;
+  const js = `(function(){try{var t=localStorage.getItem('empire-theme');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.classList.toggle('dark',t==='dark');}catch(e){}})();`;
   // eslint-disable-next-line @next/next/no-sync-scripts
   return <script dangerouslySetInnerHTML={{ __html: js }} />;
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable} ${serif.variable}`}>
       <head><ThemeInit /></head>
       <body><Providers>{children}</Providers></body>
     </html>

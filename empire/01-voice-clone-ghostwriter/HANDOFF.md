@@ -1,10 +1,15 @@
 # HANDOFF - 01-voice-clone-ghostwriter
 
 ## Last done
-- Wake-up compound rev: 5 fresh hooks vol.2 at 2026-09-08T09:09:09
+- Monitoring revalidation at 2026-09-08T14:44:01 -> `outputs/P0-validation.md`
 
 ## Now doing
-- Monitor + next compound rotation.
+- Compound loop: improve weakest P2/P3 artifact next.
+
+## Next 3
+- Pick lowest-converting listing/pin and rewrite it.
+- Log result to bus.
+- Never idle; switch team if blocked.
 
 ## Blockers
 - None
