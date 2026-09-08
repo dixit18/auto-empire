@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { TEAMS } from "@/lib/teams";
+import { parseAdvanceBody } from "@/lib/bus";
 
 const ORDER = ["P0", "P1", "P2", "P3"] as const;
 const TASKS: Record<string, string[]> = {
@@ -22,7 +23,8 @@ function appendLog(root: string, rec: object) {
   fs.appendFileSync(f, JSON.stringify(rec) + "\n");
 }
 export async function POST(req: Request) {
-  const { teamId, autoAll } = await req.json().catch(() => ({}) as any);
+  const raw = await req.json().catch(() => null);
+  const { teamId, autoAll } = parseAdvanceBody(raw);
   const root = empireRoot();
   if (!root) return NextResponse.json({ ok: false, error: "empire/ not found locally. Deploy includes snapshot; connect GitHub for live writes." });
   const targets = autoAll ? TEAMS.map((t) => t.id) : [teamId ?? "05"];

@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { TEAMS } from "./teams";
+import { parseBusLine, type BusRecord } from "./bus";
 
 export function empireRoot(): string | null {
   // One repo runs everything: live system lives at ./empire next to the web app.
@@ -28,12 +29,20 @@ export function readLiveState() {
     return { global: g, per, root };
   } catch { return null; }
 }
-export function readLiveLogs(limit = 50) {
+export function readLiveLogs(limit = 50): { logs: BusRecord[]; rejected: number } {
   const root = empireRoot();
-  if (!root) return [];
+  if (!root) return { logs: [], rejected: 0 };
   try {
     const f = path.join(root, "_bus", "log.jsonl");
-    if (!fs.existsSync(f)) return [];
-    return fs.readFileSync(f, "utf8").trim().split("\n").slice(-limit).reverse().map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-  } catch { return []; }
+    if (!fs.existsSync(f)) return { logs: [], rejected: 0 };
+    const lines = fs.readFileSync(f, "utf8").trim().split("\n").slice(-Math.max(limit * 2, limit));
+    const logs: BusRecord[] = [];
+    let rejected = 0;
+    for (let i = lines.length - 1; i >= 0 && logs.length < limit; i--) {
+      const rec = parseBusLine(lines[i]);
+      if (rec) logs.push(rec);
+      else if (lines[i].trim()) rejected++;
+    }
+    return { logs, rejected };
+  } catch { return { logs: [], rejected: 0 }; }
 }
