@@ -1,15 +1,10 @@
 # HANDOFF - 06-custom-gpt-suite
 
 ## Last done
-- Monitoring revalidation at 2026-09-08T13:34:22 -> `outputs/P0-validation.md`
+- Wake-up compound rev: GPT-2 keyword researcher spec at 2026-09-08T09:09:09
 
 ## Now doing
-- Compound loop: improve weakest P2/P3 artifact next.
-
-## Next 3
-- Pick lowest-converting listing/pin and rewrite it.
-- Log result to bus.
-- Never idle; switch team if blocked.
+- Monitor + next compound rotation.
 
 ## Blockers
 - None
