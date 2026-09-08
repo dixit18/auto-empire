@@ -1,0 +1,5 @@
+file 'C:/Users/Dell/Documents/Testing project/auto-empire/empire/02-faceless-youtube-engine/outputs/P1-mvp/first-video/assets/seg1.mp4'
+file 'C:/Users/Dell/Documents/Testing project/auto-empire/empire/02-faceless-youtube-engine/outputs/P1-mvp/first-video/assets/seg2.mp4'
+file 'C:/Users/Dell/Documents/Testing project/auto-empire/empire/02-faceless-youtube-engine/outputs/P1-mvp/first-video/assets/seg3.mp4'
+file 'C:/Users/Dell/Documents/Testing project/auto-empire/empire/02-faceless-youtube-engine/outputs/P1-mvp/first-video/assets/seg4.mp4'
+file 'C:/Users/Dell/Documents/Testing project/auto-empire/empire/02-faceless-youtube-engine/outputs/P1-mvp/first-video/assets/seg5.mp4'

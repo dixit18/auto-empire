@@ -1,13 +1,18 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import ThemeBar from "@/components/ThemeBar";
-import WorldMap from "@/components/WorldMap";
+const World3D = dynamic(() => import("@/components/World3D"), {
+  ssr: false,
+  loading: () => <div className="surface p-6"><div className="t-kicker">§ 01 — The World, in 3D</div><div className="skeleton mt-2" style={{ height: 380 }} /></div>,
+});
 import TeamCard from "@/components/TeamCard";
 import KpiStrip, { type Log } from "@/components/KpiStrip";
 import LogFeed from "@/components/LogFeed";
 import { Button, Card, Chip } from "@/components/ui";
 import Approvals from "@/components/Approvals";
+import NeedsFromYou from "@/components/NeedsFromYou";
 import { Motif } from "@/components/motifs";
 import { TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
 
@@ -118,7 +123,7 @@ export default function Page() {
         </section>
 
         <section id="world" className="scroll-mt-24">
-          <WorldMap logs={logs} cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} />
+          <World3D logs={logs} cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} />
         </section>
 
         <section id="numbers" className="scroll-mt-24">
@@ -203,6 +208,10 @@ export default function Page() {
               </p>
             </Card>
           </aside>
+        </section>
+
+        <section className="scroll-mt-24">
+          <NeedsFromYou />
         </section>
       </main>
     </div>
