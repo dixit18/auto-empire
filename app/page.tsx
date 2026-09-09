@@ -16,6 +16,8 @@ import Approvals from "@/components/Approvals";
 import NeedsFromYou from "@/components/NeedsFromYou";
 import Theses from "@/components/Theses";
 import LiveMinds from "@/components/LiveMinds";
+import LatestDrops from "@/components/LatestDrops";
+import AppLauncher from "@/components/AppLauncher";
 import SideRail from "@/components/SideRail";
 import { Kinetic, Reveal } from "@/components/Motion";
 import { Motif } from "@/components/motifs";
@@ -107,7 +109,7 @@ export default function Page() {
         </nav>
       </header>
 
-      <div className="mx-auto max-w-[1760px] px-3 sm:px-5 py-4 sm:py-6 grid gap-5 lg:grid-cols-[244px_minmax(0,1fr)] items-start">
+      <div className="mx-auto max-w-[1760px] 2xl:max-w-none px-3 sm:px-5 2xl:px-8 py-4 sm:py-6 grid gap-5 lg:grid-cols-[244px_minmax(0,1fr)] items-start">
         <aside className="hidden lg:block sticky top-[104px] surface p-3" aria-label="Newsroom rail">
           <SideRail cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} statusOf={statusOf} alerts={alerts} />
         </aside>
@@ -174,6 +176,14 @@ export default function Page() {
 
         <Reveal><section className="scroll-mt-24">
           <LiveMinds logs={logs} />
+        </section></Reveal>
+
+        <Reveal><section className="scroll-mt-24">
+          <LatestDrops />
+        </section></Reveal>
+
+        <Reveal><section className="scroll-mt-24">
+          <AppLauncher />
         </section></Reveal>
 
         <section id="newsroom" className="grid gap-3 lg:grid-cols-[264px_minmax(0,1fr)_340px] items-start scroll-mt-24">

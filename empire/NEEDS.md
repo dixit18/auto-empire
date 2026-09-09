@@ -24,6 +24,9 @@ Things only you can provide. Agents cannot invent accounts, keys, or budgets. Ti
 - [ ] 04 Approve $49/mo firehose + Stripe/crypto rails → unblocks first paid alert tier
 - [ ] 07 Approve GPU float (~$20) → unblocks free-trial stages
 
+## Cloud (makes the deployed app live, not snapshot)
+- [ ] Upstash Redis URL + token in Vercel env → unblocks shared cloud bus (local runner + deploys read/write same log)
+
 ## Content only you have
 - [ ] 01 Your past posts + one podcast/transcript → unblocks voice profile
 - [ ] 07 Three raw listing photos → unblocks realtor demo pack
