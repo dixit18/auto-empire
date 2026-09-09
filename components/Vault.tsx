@@ -25,7 +25,7 @@ export default function Vault({ team }: { team: Team }) {
   const films = files.filter((f) => f.path.endsWith(".mp4"));
   const audio = files.filter((f) => f.path.endsWith(".mp3"));
   const pics = files.filter((f) => /\.(png|jpe?g)$/.test(f.path) && !/seg\d/.test(f.path));
-  const docs = files.filter((f) => /\.(md|txt|html|json)$/.test(f.path));
+  const docs = files.filter((f) => /\.(md|txt|html|pdf|json)$/.test(f.path));
   const url = (p: string) => `/api/file?path=${encodeURIComponent(p)}`;
 
   return (
@@ -105,6 +105,6 @@ export default function Vault({ team }: { team: Team }) {
 }
 
 function prettyDoc(n: string) {
-  return n.replace(/\.(md|txt|html|json)$/, "").replace(/[-_]/g, " ")
+  return n.replace(/\.(md|txt|html|pdf|json)$/, "").replace(/[-_]/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }

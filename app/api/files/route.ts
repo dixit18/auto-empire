@@ -6,7 +6,7 @@ import { empireRoot } from "@/lib/server";
 
 export const dynamic = "force-dynamic";
 
-const ALLOW = new Set([".md", ".txt", ".html", ".png", ".jpg", ".jpeg", ".mp4", ".mp3", ".json"]);
+const ALLOW = new Set([".md", ".txt", ".html", ".pdf", ".png", ".jpg", ".jpeg", ".mp4", ".mp3", ".json"]);
 
 /* List a team's shippable artifacts: outputs/ + product folders + README. */
 export async function GET(req: Request) {

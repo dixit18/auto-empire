@@ -136,10 +136,47 @@ def sway(d, secs=30):
         img.save(os.path.join(fd, "f-%04d.png" % i))
     assemble(d, "sway-loop.mp4", secs)
 
+def bloom(d, secs=25):
+    N = secs * FPS; fd = os.path.join(d, "frames"); os.makedirs(fd, exist_ok=True)
+    bg = vgrad((10, 8, 12), (26, 14, 20))
+    cx, cy = W / 2, H / 2 - 40
+    rnd = random.Random(11)
+    motes = [(rnd.uniform(0, W), rnd.uniform(0, H), rnd.uniform(0, 6.28), rnd.uniform(0.5, 1.5)) for _ in range(30)]
+    for i in range(N):
+        t = i / (N - 1)
+        img = bg.copy(); dr = ImageDraw.Draw(img, "RGBA")
+        dr.line([(cx, cy + 120), (cx, H)], fill=(52, 96, 54, 255), width=14)
+        dr.ellipse([cx - 90, cy + 180, cx - 20, cy + 260], fill=(44, 110, 60, 255))
+        dr.ellipse([cx + 20, cy + 260, cx + 90, cy + 340], fill=(44, 110, 60, 255))
+        open_k = ease(max(0.0, min(1.0, (t - 0.12) * 1.35)))
+        for ring, (count, base, col) in enumerate([(10, 60, (146, 44, 62)), (8, 108, (206, 92, 108))]):
+            for p in range(count):
+                a = p / count * 2 * math.pi + ring * 0.4 + t * 0.05
+                spread = 0.25 + open_k * 1.05
+                ex = cx + math.cos(a) * base * spread * 2.2
+                ey = cy + math.sin(a) * base * spread * 2.2
+                r = base * (0.35 + open_k * 0.75)
+                dr.ellipse([ex - r, ey - r * 0.55, ex + r, ey + r * 0.55], fill=col + (235,))
+        cr = 34 * (0.4 + open_k * 0.6)
+        for s in range(12):
+            a = s / 12 * 2 * math.pi
+            dr.line([(cx, cy), (cx + math.cos(a) * cr, cy + math.sin(a) * cr)], fill=(240, 200, 90, 220), width=4)
+        dr.ellipse([cx - cr * 0.4, cy - cr * 0.4, cx + cr * 0.4, cy + cr * 0.4], fill=(250, 225, 140, 255))
+        for mx, my, ph, sp in motes:
+            yy = (my - t * 90 * sp) % (H + 40) - 20
+            al = int(70 + 80 * abs(math.sin(t * 6 * sp + ph)))
+            dr.ellipse([mx - 2, yy - 2, mx + 2, yy + 2], fill=(250, 240, 200, al))
+        if i < 48:
+            a = int(255 * (1 - i / 48))
+            textc(dr, 220, "WATCH IT", F(54, False), (235, 220, 200, a))
+            textc(dr, 290, "OPEN.", F(92), (232, 130, 140, a))
+        img.convert("RGB").save(os.path.join(fd, "f-%04d.png" % i))
+    assemble(d, "bloom-macro.mp4", secs)
+
 if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
     which = sys.argv[1]
-    secs = int(sys.argv[2]) if len(sys.argv) > 2 else (30 if which != "rain" else 25)
-    d = os.path.join(here, {"plant": "plant-180days", "rain": "rain-window-night", "sway": "sway-loop"}[which])
+    secs = int(sys.argv[2]) if len(sys.argv) > 2 else (25 if which in ("rain", "bloom") else 30)
+    d = os.path.join(here, {"plant": "plant-180days", "rain": "rain-window-night", "sway": "sway-loop", "bloom": "bloom-macro"}[which])
     os.makedirs(d, exist_ok=True)
-    {"plant": plant, "rain": rain, "sway": sway}[which](d, secs)
+    {"plant": plant, "rain": rain, "sway": sway, "bloom": bloom}[which](d, secs)

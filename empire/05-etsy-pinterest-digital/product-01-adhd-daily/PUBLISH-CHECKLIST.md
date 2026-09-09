@@ -2,7 +2,7 @@
 Owner time needed: ~25 min. Everything else is in this folder.
 
 ## Etsy (~15 min)
-- [ ] Create listing → Digital download → upload `printable.html` printed-to-PDF (Letter + A4 + A5: print dialog → Save as PDF)
+- [ ] Create listing → Digital download → upload `printable-letter.pdf` (DONE by agents — print-ready Letter, no header/footer)
 - [ ] Title ← paste from `listing.txt` (line 1)
 - [ ] Description ← paste from `listing.txt`
 - [ ] Tags ← paste all 13 from `listing.txt`

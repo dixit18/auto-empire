@@ -2,7 +2,7 @@
 Owner time needed: ~25 min. Spec: `../outputs/P2-launch/product-02-poetcore-kit.md`.
 
 ## Etsy (~15 min)
-- [ ] Before listing: expand `printable.html` to full kit (6 papers — duplicate page 1 with varied headers; 2 envelopes; 24 prompts page; 12 labels page) → Save as PDF
+- [ ] Upload `printable-letter.pdf` (DONE by agents — sample pages; expand to full kit per spec before listing)
 - [ ] Title: "Poetcore Stationery Kit Printable, Pen Pal Letter Writing Paper Set Vintage Envelope Template Snail Mail Gift Poet Aesthetic"
 - [ ] Description: use spec file's description block
 - [ ] Tags: paste all 13 from spec file
