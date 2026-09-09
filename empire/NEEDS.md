@@ -12,7 +12,7 @@ Things only you can provide. Agents cannot invent accounts, keys, or budgets. Ti
 - [ ] 08 One pilot salon/dentist intro → unblocks first $199 retainer
 
 ## API keys (paste into chat or `.env`, never commit)
-- [ ] 02+09 ElevenLabs key → unblocks all voiceovers (video VO, sleep tracks)
+- [ ] 02+09 ElevenLabs key → upgrades all voiceovers from Piper-local to studio warmth (v1 SHIPPED with Piper, no key needed)
 - [ ] 01+06+08 OpenAI/Anthropic key → unblocks bots at $3–12/mo burn
 - [ ] 04 X firehose subscription ($49/mo wholesale) + Telegram bot token → unblocks signal bots
 - [ ] 07 Replicate token → unblocks staging renders (<$0.30/pop)

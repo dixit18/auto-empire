@@ -13,6 +13,7 @@ import LogFeed from "@/components/LogFeed";
 import { Button, Card, Chip } from "@/components/ui";
 import Approvals from "@/components/Approvals";
 import NeedsFromYou from "@/components/NeedsFromYou";
+import Theses from "@/components/Theses";
 import SideRail from "@/components/SideRail";
 import { Motif } from "@/components/motifs";
 import { TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
@@ -218,6 +219,10 @@ export default function Page() {
 
         <section id="wanted" className="scroll-mt-24">
           <NeedsFromYou />
+        </section>
+
+        <section className="scroll-mt-24">
+          <Theses />
         </section>
         </main>
       </div>

@@ -8,7 +8,7 @@ export const NEEDS: Need[] = [
   { id: "tiktok-shop", team: "11", text: "TikTok Shop seller account", unblocks: "hero listing", group: "Accounts & access" },
   { id: "meta-ads", team: "11", text: "Meta ad account + pixel", unblocks: "$20/day tests", group: "Accounts & access" },
   { id: "pilot-salon", team: "08", text: "One pilot salon/dentist intro", unblocks: "first $199 retainer", group: "Accounts & access" },
-  { id: "elevenlabs", team: "02·09", text: "ElevenLabs key", unblocks: "all voiceovers", group: "API keys" },
+  { id: "elevenlabs", team: "02·09", text: "ElevenLabs key (upgrade; v1 voices ship on local Piper)", unblocks: "studio warmth", group: "API keys" },
   { id: "llm-key", team: "01·06·08", text: "OpenAI/Anthropic key ($3–12/mo)", unblocks: "bots", group: "API keys" },
   { id: "firehose", team: "04", text: "X firehose ($49/mo) + Telegram bot token", unblocks: "signal bots", group: "API keys" },
   { id: "replicate", team: "07", text: "Replicate token", unblocks: "staging renders", group: "API keys" },
