@@ -173,6 +173,39 @@ def bloom(d, secs=25):
         img.convert("RGB").save(os.path.join(fd, "f-%04d.png" % i))
     assemble(d, "bloom-macro.mp4", secs)
 
+def berry(d, secs=25):
+    N = secs * FPS; fd = os.path.join(d, "frames"); os.makedirs(fd, exist_ok=True)
+    bg = vgrad((8, 14, 9), (22, 30, 18))
+    cx, cy = W / 2, H / 2 - 60
+    rnd = random.Random(23)
+    for i in range(N):
+        t = i / (N - 1)
+        img = bg.copy(); dr = ImageDraw.Draw(img, "RGBA")
+        dr.line([(cx, cy + 130), (cx, H)], fill=(52, 96, 54, 255), width=14)
+        open_k = ease(max(0.0, min(1.0, t * 2.2)))
+        for p in range(6):
+            a = p / 6 * 2 * math.pi
+            ex, ey = cx + math.cos(a) * 95 * open_k, cy + math.sin(a) * 95 * open_k
+            dr.ellipse([ex - 46, ey - 26, ex + 46, ey + 26], fill=(238, 236, 228, 235))
+        dr.ellipse([cx - 26, cy - 26, cx + 26, cy + 26], fill=(240, 200, 90, 255))
+        ft = max(0.0, min(1.0, (t - 0.45) * 1.8))
+        if ft > 0:
+            for b, (ox, oy) in enumerate([(0, 190), (-120, 260), (120, 260)]):
+                r = 44 * ease(min(1.0, ft * 1.4 - b * 0.15))
+                if r > 0:
+                    dr.ellipse([cx + ox - r, cy + oy - r, cx + ox + r, cy + oy + r], fill=(198, 44, 52, 245))
+                    dr.ellipse([cx + ox - r * 0.3, cy + oy - r * 0.35, cx + ox, cy + oy - r * 0.05], fill=(235, 120, 125, 235))
+        for mx in range(24):
+            my = (mx * 167 + i * 2) % (H + 40) - 20
+            al = int(60 + 60 * abs(math.sin(i * 0.05 + mx)))
+            dr.ellipse([mx * 30 - 2, my - 2, mx * 30 + 2, my + 2], fill=(250, 240, 200, al))
+        if i < 48:
+            a = int(255 * (1 - i / 48))
+            textc(dr, 220, "ONE FLOWER.", F(54, False), (235, 220, 200, a))
+            textc(dr, 290, "FIVE BERRIES.", F(92), (220, 110, 115, a))
+        img.convert("RGB").save(os.path.join(fd, "f-%04d.png" % i))
+    assemble(d, "berry-fruit.mp4", secs)
+
 if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
     which = sys.argv[1]
@@ -181,7 +214,7 @@ if __name__ == "__main__":
         d = os.path.join(here, "plant-4min-epic"); os.makedirs(d, exist_ok=True)
         plant(d, 240, 12)
     else:
-        secs = int(sys.argv[2]) if len(sys.argv) > 2 else (25 if which in ("rain", "bloom") else 30)
-        d = os.path.join(here, {"plant": "plant-180days", "rain": "rain-window-night", "sway": "sway-loop", "bloom": "bloom-macro"}[which])
+        secs = int(sys.argv[2]) if len(sys.argv) > 2 else (25 if which in ("rain", "bloom", "berry") else 30)
+        d = os.path.join(here, {"plant": "plant-180days", "rain": "rain-window-night", "sway": "sway-loop", "bloom": "bloom-macro", "berry": "berry-fruit"}[which])
         os.makedirs(d, exist_ok=True)
-        {"plant": plant, "rain": rain, "sway": sway, "bloom": bloom}[which](d, secs)
+        {"plant": plant, "rain": rain, "sway": sway, "bloom": bloom, "berry": berry}[which](d, secs)

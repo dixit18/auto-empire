@@ -11,3 +11,5 @@ frames/
 # local memory DBs (schema lives in repo, data stays on machine)
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
