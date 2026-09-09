@@ -7,7 +7,7 @@ import LogFeed from "@/components/LogFeed";
 import Approvals from "@/components/Approvals";
 import { Button, Card, Chip } from "@/components/ui";
 import { Motif } from "@/components/motifs";
-import type { Team } from "@/lib/teams";
+import { TEAMS, type Team } from "@/lib/teams";
 import type { Log } from "@/components/KpiStrip";
 
 export default function TeamView({ team }: { team: Team }) {
@@ -91,6 +91,19 @@ export default function TeamView({ team }: { team: Team }) {
         </Card>
         <div className="min-w-0"><Approvals logs={logs} onApproved={refresh} /></div>
       </div>
+
+      <nav className="surface p-3 flex items-center gap-2" aria-label="More worlds">
+        {(() => {
+          const i = TEAMS.findIndex((t) => t.id === team.id);
+          const prev = TEAMS[(i + TEAMS.length - 1) % TEAMS.length];
+          const next = TEAMS[(i + 1) % TEAMS.length];
+          return (<>
+            <Link href={`/${prev.dir}`} className="btn btn-ghost" style={{ fontSize: "0.8rem" }}>← {prev.id} · {prev.name}</Link>
+            <Link href="/" className="t-small mx-auto" style={{ color: "hsl(var(--muted-fg))" }}>All worlds</Link>
+            <Link href={`/${next.dir}`} className="btn btn-ghost" style={{ fontSize: "0.8rem" }}>{next.id} · {next.name} →</Link>
+          </>);
+        })()}
+      </nav>
     </div>
   );
 }

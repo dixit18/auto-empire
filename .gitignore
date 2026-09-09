@@ -6,3 +6,5 @@ dist
 *.log
 .DS_Store
 # NEVER commit tokens - use env vars only
+# render frames are regenerable bulk - never commit
+frames/

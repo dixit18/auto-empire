@@ -13,6 +13,7 @@ import LogFeed from "@/components/LogFeed";
 import { Button, Card, Chip } from "@/components/ui";
 import Approvals from "@/components/Approvals";
 import NeedsFromYou from "@/components/NeedsFromYou";
+import SideRail from "@/components/SideRail";
 import { Motif } from "@/components/motifs";
 import { TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
 
@@ -67,6 +68,7 @@ export default function Page() {
   }
 
   const st: TeamState | undefined = states[cur.id];
+  const alerts = logs.filter((l) => l.status === "needs-approval").length;
   const statusOf = (t: Team) => {
     const s = states[t.id];
     if (!s) return "…";
@@ -96,7 +98,11 @@ export default function Page() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-[1400px] px-3 sm:px-5 py-4 sm:py-6 space-y-6">
+      <div className="mx-auto max-w-[1500px] px-3 sm:px-5 py-4 sm:py-6 grid gap-5 lg:grid-cols-[244px_minmax(0,1fr)] items-start">
+        <aside className="hidden lg:block sticky top-[104px] surface p-3" aria-label="Newsroom rail">
+          <SideRail cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} statusOf={statusOf} alerts={alerts} />
+        </aside>
+        <main className="min-w-0 space-y-6">
         {/* cover story */}
         <section className="grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] items-end">
           <div>
@@ -132,7 +138,7 @@ export default function Page() {
         </section>
 
         <section id="newsroom" className="grid gap-3 lg:grid-cols-[264px_minmax(0,1fr)_340px] items-start scroll-mt-24">
-          <nav aria-label="Teams" className="lg:sticky lg:top-[104px] min-w-0">
+          <nav aria-label="Teams" className="lg:hidden min-w-0">
             <div className="t-kicker mb-2 hidden lg:block">§ 03 — Desks</div>
             <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1 -mx-3 px-3 lg:mx-0 lg:px-0"
               style={{ scrollSnapType: "x mandatory" }}>
@@ -210,10 +216,11 @@ export default function Page() {
           </aside>
         </section>
 
-        <section className="scroll-mt-24">
+        <section id="wanted" className="scroll-mt-24">
           <NeedsFromYou />
         </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
