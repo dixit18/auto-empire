@@ -1,15 +1,16 @@
 "use client";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Grid } from "@react-three/drei";
+import { OrbitControls, Grid, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { TEAMS, ISLANDS, type Team } from "@/lib/teams";
 import type { Log } from "./KpiStrip";
 
-/* Editorial island inks. */
+/* Editorial island inks + clay pastels (matte studio look). */
 const INK: Record<string, string> = { forest: "#2e7d4f", beach: "#0b6e99", sunset: "#bd5a2e", lagoon: "#0e7c7b" };
+const PASTEL = ["#b8e6c1", "#ffb7c5", "#fff3a0", "#b3dafe", "#d8b4fe"];
 
 /* map % → world units */
 const PX = (x: number) => (x - 50) / 9;
@@ -67,10 +68,15 @@ function Island({ team, selected, dimmed, night, onPick, onHover }: {
       onClick={(e) => { e.stopPropagation(); onPick(); }}
       onPointerOver={(e) => { e.stopPropagation(); onHover(team.id); document.body.style.cursor = "pointer"; }}
       onPointerOut={() => { onHover(null); document.body.style.cursor = "auto"; }}>
-      {/* medallion body */}
-      <mesh position={[0, 0.1, 0]}>
+      {/* medallion body — matte clay */}
+      <mesh position={[0, 0.1, 0]} castShadow>
         <cylinderGeometry args={[0.52, 0.66, 0.34, 28]} />
-        <meshStandardMaterial color={night ? "#241d13" : "#fffdf6"} roughness={0.55} metalness={0.08} transparent opacity={dimmed ? 0.45 : 1} />
+        <meshStandardMaterial color={night ? "#2b2318" : "#fffdf6"} roughness={0.92} metalness={0} transparent opacity={dimmed ? 0.45 : 1} />
+      </mesh>
+      {/* little clay blob — each island's mascot */}
+      <mesh position={[(parseInt(team.id, 10) % 3 - 1) * 0.28, 0.42, ((parseInt(team.id, 10) * 7) % 3 - 1) * 0.24]} castShadow>
+        <sphereGeometry args={[0.15, 20, 20]} />
+        <meshStandardMaterial color={PASTEL[parseInt(team.id, 10) % PASTEL.length]} roughness={0.95} metalness={0} transparent opacity={dimmed ? 0.5 : 1} />
       </mesh>
       {/* ink rim */}
       <mesh position={[0, 0.27, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -121,9 +127,9 @@ function Hub() {
   });
   return (
     <group position={[0, 0, 0]}>
-      <mesh position={[0, 0.12, 0]}>
+      <mesh position={[0, 0.12, 0]} castShadow>
         <cylinderGeometry args={[0.95, 1.1, 0.4, 36]} />
-        <meshStandardMaterial color="#1c1712" roughness={0.35} metalness={0.3} />
+        <meshStandardMaterial color="#1c1712" roughness={0.8} metalness={0.05} />
       </mesh>
       <mesh ref={ring} position={[0, 0.34, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.72, 0.05, 12, 48]} />
@@ -203,11 +209,14 @@ function Scene({ logs, cur, onPick, onHoverTeam }: {
   return (
     <>
       <ambientLight intensity={night ? 0.85 : 1.05} />
-      <directionalLight position={[5, 8, 4]} intensity={night ? 0.9 : 1.5} />
+      <hemisphereLight args={night ? ["#4a4132", "#14100b", 0.5] : ["#fff6e6", "#c9b995", 0.55]} />
+      <directionalLight position={[5, 8, 4]} intensity={night ? 0.9 : 1.4} castShadow
+        shadow-mapSize={[1024, 1024]} shadow-camera-left={-8} shadow-camera-right={8} shadow-camera-top={8} shadow-camera-bottom={-8} />
       <directionalLight position={[-4, 3, -5]} intensity={0.25} />
       <Grid position={[0, -0.12, 0]} args={[24, 24]} cellSize={0.6} cellThickness={0.6} cellColor={night ? "#2c251b" : "#cfc3a6"}
         sectionSize={3} sectionThickness={1} sectionColor={night ? "#4a4132" : "#a89a78"}
         fadeDistance={26} fadeStrength={2.2} infiniteGrid />
+      <ContactShadows position={[0, -0.11, 0]} opacity={night ? 0.55 : 0.32} scale={16} blur={2.6} far={4} color={night ? "#000000" : "#5a4a30"} />
       <Rails curves={curves} hover={hover} night={night} />
       <Hub />
       {TEAMS.map((t) => (
@@ -245,7 +254,7 @@ export default function World3D({ logs, cur, onPick }: { logs: Log[]; cur: Team;
       </div>
       <div className="relative mx-3 sm:mx-4 mb-2 mt-2 rounded border overflow-hidden"
         style={{ height: "min(58vh, 480px)", minHeight: 320, background: "hsl(var(--card-2))", touchAction: "none" }}>
-        <Canvas key={seed} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}
+        <Canvas key={seed} shadows dpr={[1, 2]} gl={{ antialias: true, alpha: true }}
           camera={{ position: [0, 7.5, 10.5], fov: 42 }}
           fallback={<div className="grid h-full place-items-center t-small">3D unavailable here — the island list below still works.</div>}>
           <Suspense fallback={null}>

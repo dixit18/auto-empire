@@ -1,14 +1,46 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import AgentGraph from "@/components/AgentGraph";
 import Vault from "@/components/Vault";
+const TeamEmblem3D = dynamic(() => import("@/components/TeamEmblem3D"), {
+  ssr: false,
+  loading: () => <div className="skeleton" style={{ width: 96, height: 96, borderRadius: 16 }} />,
+});
 import LogFeed from "@/components/LogFeed";
 import Approvals from "@/components/Approvals";
 import { Button, Card, Chip } from "@/components/ui";
 import { Motif } from "@/components/motifs";
 import { TEAMS, type Team } from "@/lib/teams";
+import { teamThoughts, ago } from "@/lib/thoughts";
 import type { Log } from "@/components/KpiStrip";
+
+function CrewMinds({ team, logs }: { team: Team; logs: Log[] }) {
+  const th = teamThoughts(team, logs);
+  const all = [th.master, ...th.crew];
+  return (
+    <Card>
+      <div className="flex items-baseline gap-2 mb-2">
+        <h2 className="t-h2">Crew minds, right now</h2>
+        {th.live && <span className="chip" style={{ background: "hsl(var(--success) / .14)", color: "hsl(var(--success))", borderColor: "hsl(var(--success) / .35)" }}>● live</span>}
+      </div>
+      <ul className="space-y-1.5">
+        {all.map((m, i) => (
+          <li key={`${m.who}-${i}`} className="surface-2 px-2.5 py-2 flex gap-2 min-w-0">
+            <span aria-hidden className={m.live ? "pulse-ring" : ""}
+              style={{ width: 8, height: 8, borderRadius: 99, marginTop: 6, flexShrink: 0,
+                background: m.live ? "hsl(var(--success))" : "hsl(var(--border-strong))" }} />
+            <div className="min-w-0">
+              <div className="t-small"><b>{m.who}</b> <span style={{ color: "hsl(var(--muted-fg))" }}>· {m.role}{m.ts ? ` · ${ago(m.ts)}` : ""}</span></div>
+              <p className="t-small break-words" style={{ color: "hsl(var(--muted-fg))" }}>{m.text}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
 
 export default function TeamView({ team }: { team: Team }) {
   const [logs, setLogs] = useState<Log[]>([]);
@@ -52,17 +84,20 @@ export default function TeamView({ team }: { team: Team }) {
       <div className={`relative overflow-hidden rounded-xl border p-4 sm:p-5 world-${team.world}-glow`}>
         <Link href="/" className="t-small" style={{ color: "hsl(var(--muted-fg))" }}>← All worlds</Link>
         <div className="mt-2 flex items-center gap-3">
-          <span className="surface grid place-items-center shrink-0" style={{ width: 60, height: 60, borderRadius: 16 }}>
-            <Motif id={team.id} className="h-10 w-10" />
+          <span className="surface grid place-items-center shrink-0" style={{ width: 56, height: 56, borderRadius: 14, color: "hsl(var(--foreground))" }}>
+            <Motif id={team.id} className="h-9 w-9" />
           </span>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="t-display truncate" style={{ fontSize: "clamp(1.4rem,1rem+2vw,2rem)" }}>{team.id} · {team.name}</h1>
             <p className="t-body" style={{ color: "hsl(var(--muted-fg))" }}>{team.tagline}</p>
           </div>
-          <span className="ml-auto shrink-0 hidden sm:block"><Chip>{team.world} world</Chip></span>
+          <span className="shrink-0 hidden sm:block" style={{ width: 96, height: 96 }} aria-hidden>
+            <TeamEmblem3D team={team} />
+          </span>
         </div>
-        <p className="t-small mt-2" style={{ color: "hsl(var(--muted-fg))" }}>
-          👑 {team.master} · {team.industry} · <span className="t-num">{team.price}</span> · crew: {team.crew.join(" · ")}
+        <p className="t-small mt-2 flex flex-wrap items-center gap-2" style={{ color: "hsl(var(--muted-fg))" }}>
+          <span>👑 {team.master} · {team.industry} · <span className="t-num">{team.price}</span></span>
+          <Chip>{team.world} world</Chip>
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button loading={busy} onClick={run}>▶ Run next task</Button>
@@ -79,6 +114,8 @@ export default function TeamView({ team }: { team: Team }) {
         <h2 className="t-h2 mb-3">Who talks to whom — live thought path</h2>
         <AgentGraph team={team} logs={logs} />
       </Card>
+
+      <CrewMinds team={team} logs={logs} />
 
       <Vault team={team} />
 

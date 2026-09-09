@@ -160,6 +160,11 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes caretblink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.t-caret { animation: caretblink 1s steps(1) infinite; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { display: inline-flex; white-space: nowrap; animation: marquee 36s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
 @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 @keyframes ringpulse { 0% { box-shadow: 0 0 0 0 hsl(var(--success) / 0.45); } 100% { box-shadow: 0 0 0 12px transparent; } }
 .pulse-ring { animation: ringpulse 2.2s ease-out infinite; }

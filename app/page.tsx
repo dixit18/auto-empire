@@ -14,7 +14,9 @@ import { Button, Card, Chip } from "@/components/ui";
 import Approvals from "@/components/Approvals";
 import NeedsFromYou from "@/components/NeedsFromYou";
 import Theses from "@/components/Theses";
+import LiveMinds from "@/components/LiveMinds";
 import SideRail from "@/components/SideRail";
+import { Kinetic, Reveal } from "@/components/Motion";
 import { Motif } from "@/components/motifs";
 import { TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
 
@@ -104,11 +106,23 @@ export default function Page() {
           <SideRail cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} statusOf={statusOf} alerts={alerts} />
         </aside>
         <main className="min-w-0 space-y-6">
+        <div className="marquee overflow-hidden rule-single rule-double border rounded" aria-hidden={false} aria-label="Latest wire">
+          <div className="marquee-track t-small t-mono py-1.5" style={{ width: "max-content", color: "hsl(var(--muted-fg))" }}>
+            {[0, 1].map((k) => (
+              <span key={k}>
+                {logs.slice(0, 8).map((l, i) => (
+                  <span key={i}> — {String(l.team).slice(0, 2)} {l.from}→{l.to}: {l.msg.slice(0, 64)} </span>
+                ))}
+                {logs.length === 0 && <span> — wire warming up </span>}
+              </span>
+            ))}
+          </div>
+        </div>
         {/* cover story */}
         <section className="grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] items-end">
           <div>
             <div className="t-kicker">The Cover Story</div>
-            <h1 className="t-display mt-1">Eleven crews.<br />One newsroom.</h1>
+            <Kinetic text="Eleven crews. One newsroom." className="t-display mt-1" />
             <p className="t-body dropcap mt-3 max-w-prose" style={{ color: "hsl(var(--muted-fg))" }}>
               Each company in this empire keeps a master agent and four workers on a phase-wise plan — from validation
               through scale — with no waiting between phases. What follows is the living record: every island below files
@@ -129,14 +143,18 @@ export default function Page() {
           </div>
         </section>
 
-        <section id="world" className="scroll-mt-24">
+        <Reveal><section id="world" className="scroll-mt-24">
           <World3D logs={logs} cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} />
-        </section>
+        </section></Reveal>
 
-        <section id="numbers" className="scroll-mt-24">
+        <Reveal><section id="numbers" className="scroll-mt-24">
           <div className="t-kicker mb-2">§ 02 — By the Numbers</div>
           <KpiStrip logs={logs} teamCount={TEAMS.length} />
-        </section>
+        </section></Reveal>
+
+        <Reveal><section className="scroll-mt-24">
+          <LiveMinds logs={logs} />
+        </section></Reveal>
 
         <section id="newsroom" className="grid gap-3 lg:grid-cols-[264px_minmax(0,1fr)_340px] items-start scroll-mt-24">
           <nav aria-label="Teams" className="lg:hidden min-w-0">
