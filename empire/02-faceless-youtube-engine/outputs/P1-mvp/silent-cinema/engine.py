@@ -16,14 +16,14 @@ def vgrad(top, bot):
         k = y / (H - 1)
         d.line([(0, y), (W, y)], fill=tuple(int(top[i] + (bot[i] - top[i]) * k) for i in range(3)))
     return img
-def assemble(d, name, secs):
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS), "-i",
+def assemble(d, name, secs, fps=FPS):
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(fps), "-i",
         os.path.join(d, "frames", "f-%04d.png"), "-c:v", "libx264", "-pix_fmt", "yuv420p",
         "-crf", "20", os.path.join(d, name)], check=True)
-    print("built", name, os.path.getsize(os.path.join(d, name)), "bytes")
+    print("built", name, os.path.getsize(os.path.join(d, name)), "bytes", flush=True)
 
-def plant(d, secs=30):
-    N = secs * FPS; fd = os.path.join(d, "frames"); os.makedirs(fd, exist_ok=True)
+def plant(d, secs=30, fps=FPS):
+    N = secs * fps; fd = os.path.join(d, "frames"); os.makedirs(fd, exist_ok=True)
     bg = vgrad((8, 14, 10), (24, 34, 22))
     soil = Image.new("RGB", (W, H), (0, 0, 0)); sd = ImageDraw.Draw(soil)
     for y in range(1050, H):
@@ -73,7 +73,7 @@ def plant(d, secs=30):
             a = int(255 * ((i - (N - 60)) / 60))
             textc(dr, 1080, "GROW WITH US.", F(40, False), (244, 237, 222, a))
         img.convert("RGB").save(os.path.join(fd, "f-%04d.png" % i))
-    assemble(d, "plant-180days.mp4", secs)
+    assemble(d, "plant-180days.mp4" if fps == FPS else "plant-4min-epic.mp4", secs, fps)
 
 def rain(d, secs=25):
     N = secs * FPS; fd = os.path.join(d, "frames"); os.makedirs(fd, exist_ok=True)
@@ -176,7 +176,12 @@ def bloom(d, secs=25):
 if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
     which = sys.argv[1]
-    secs = int(sys.argv[2]) if len(sys.argv) > 2 else (25 if which in ("rain", "bloom") else 30)
-    d = os.path.join(here, {"plant": "plant-180days", "rain": "rain-window-night", "sway": "sway-loop", "bloom": "bloom-macro"}[which])
-    os.makedirs(d, exist_ok=True)
-    {"plant": plant, "rain": rain, "sway": sway, "bloom": bloom}[which](d, secs)
+    if which == "plantlong":
+        # 4-minute stop-motion epic at the traditional 12fps: half the frames, handmade feel
+        d = os.path.join(here, "plant-4min-epic"); os.makedirs(d, exist_ok=True)
+        plant(d, 240, 12)
+    else:
+        secs = int(sys.argv[2]) if len(sys.argv) > 2 else (25 if which in ("rain", "bloom") else 30)
+        d = os.path.join(here, {"plant": "plant-180days", "rain": "rain-window-night", "sway": "sway-loop", "bloom": "bloom-macro"}[which])
+        os.makedirs(d, exist_ok=True)
+        {"plant": plant, "rain": rain, "sway": sway, "bloom": bloom}[which](d, secs)

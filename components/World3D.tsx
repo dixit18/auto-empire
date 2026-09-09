@@ -234,31 +234,16 @@ function Scene({ logs, cur, onPick, onHoverTeam }: {
 
 /* 3D agent world. Real geometry, real bus traffic, full roam. */
 export default function World3D({ logs, cur, onPick }: { logs: Log[]; cur: Team; onPick: (t: Team) => void }) {
-  const [hoverTeam, setHoverTeam] = useState<string | null>(null);
-  const [seed, setSeed] = useState(0);
-  const hovered = hoverTeam ? TEAMS.find((t) => t.id === hoverTeam) : null;
   const latest = logs[0];
   return (
-    <div className="surface relative overflow-hidden" aria-label="Agent world in 3D">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-3 sm:px-4 pt-3">
-        <span className="t-kicker">§ 01 — The World, in 3D</span>
-        <span className="t-small hidden md:inline" style={{ color: "hsl(var(--muted-fg))" }}>
-          {hovered ? `${hovered.id} · ${hovered.name} — ${hovered.tagline}` : "drag to orbit · scroll to zoom · right-drag to pan · click an island"}
-        </span>
-        <div className="ml-auto flex items-center gap-1.5">
-          <button className="btn btn-ghost" style={{ padding: "0.3rem 0.7rem" }} onClick={() => setSeed((s) => s + 1)}>Reset view</button>
-          <Link href={`/${cur.dir}`} className="btn btn-primary" style={{ padding: "0.35rem 0.8rem", fontSize: "0.78rem" }}>
-            Open {cur.id} →
-          </Link>
-        </div>
-      </div>
-      <div className="relative mx-3 sm:mx-4 mb-2 mt-2 rounded border overflow-hidden"
+    <div className="relative" aria-label="Agent world in 3D">
+      <div className="relative rounded border overflow-hidden"
         style={{ height: "min(58vh, 480px)", minHeight: 320, background: "hsl(var(--card-2))", touchAction: "none" }}>
-        <Canvas key={seed} shadows dpr={[1, 2]} gl={{ antialias: true, alpha: true }}
+        <Canvas key="world" shadows dpr={[1, 2]} gl={{ antialias: true, alpha: true }}
           camera={{ position: [0, 7.5, 10.5], fov: 42 }}
           fallback={<div className="grid h-full place-items-center t-small">3D unavailable here — the island list below still works.</div>}>
           <Suspense fallback={null}>
-            <Scene logs={logs} cur={cur} onPick={onPick} onHoverTeam={setHoverTeam} />
+            <Scene logs={logs} cur={cur} onPick={onPick} onHoverTeam={() => {}} />
           </Suspense>
         </Canvas>
       </div>

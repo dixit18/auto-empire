@@ -208,26 +208,76 @@ def backfill_once():
             # run one P0 task immediately to create proof
             do_task(team, st)
 
+def write_digest():
+    """Half-hour status report: per-team state + last-30m activity. No push, local truth."""
+    try:
+        cutoff = time.time() - 1800
+        recent = 0
+        per_team_count = {}
+        approvals = 0
+        try:
+            with open(BUS, encoding="utf-8") as f:
+                for line in f:
+                    try:
+                        r = json.loads(line)
+                    except Exception:
+                        continue
+                    try:
+                        ts = datetime.datetime.fromisoformat(r.get("ts", "")).timestamp()
+                    except Exception:
+                        continue
+                    if ts >= cutoff:
+                        recent += 1
+                        per_team_count[r.get("team", "?")] = per_team_count.get(r.get("team", "?"), 0) + 1
+                        if r.get("status") == "needs-approval":
+                            approvals += 1
+        except Exception:
+            pass
+        gs = load_state(STATE_PATH, {"teams": {}})
+        L = ["# EMPIRE DIGEST — " + now(), "", f"Bus events last 30m: {recent} · approvals pending: {approvals}", ""]
+        for team in TEAMS:
+            st = load_state(os.path.join(team_dir(team), "STATE.json"), {})
+            n = per_team_count.get(team, 0)
+            L.append(f"- {team}: {st.get('phase', '?')} {st.get('taskIndex', '?')}/3 {st.get('status', '?')} · {n} events/30m · updated {st.get('updated', '?')}")
+        L += ["", "Next digest in ~30m. Full truth: _bus/log.jsonl + app § Live minds."]
+        with open(os.path.join(ROOT, "_bus", "digest.md"), "w", encoding="utf-8") as f:
+            f.write("\n".join(L) + "\n")
+    except Exception as e:
+        try:
+            log("SYSTEM", "ORCH", "ALL", "-", f"digest failed: {e}", "blocked")
+        except Exception:
+            pass
+
 def run_auto():
     print("Orchestrator AUTO - keep working working. Ctrl+C to stop (state persists).", flush=True)
+    last_digest = 0.0
     while True:
         progressed = False
         for team in TEAMS:
-            st = ensure_team_files(team)
-            if st.get("status") == "DONE_ALL":
-                if stale(st):
-                    revalidate(team)
-                    time.sleep(1)
-                continue
             try:
-                if do_task(team, st):
-                    progressed = True
+                st = ensure_team_files(team)
+                if st.get("status") == "DONE_ALL":
+                    if stale(st):
+                        revalidate(team)
+                        time.sleep(1)
+                    continue
+                try:
+                    if do_task(team, st):
+                        progressed = True
+                except Exception as e:
+                    log(team, "SYSTEM", "MASTER", st.get("phase", "?"), f"error: {e}", "blocked")
             except Exception as e:
-                log(team, "SYSTEM", "MASTER", st.get("phase", "?"), f"error: {e}", "blocked")
+                try:
+                    log(team, "SYSTEM", "ORCH", "-", f"loop guard caught: {e}", "blocked")
+                except Exception:
+                    pass
             time.sleep(1.5)
         if not progressed:
             log("SYSTEM", "ORCH", "ALL", "-", "All DONE_ALL. Heartbeat. Re-check for improvements in 10s.", "progress")
             time.sleep(10)
+        if time.time() - last_digest > 1800:
+            write_digest()
+            last_digest = time.time()
 
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "--once"

@@ -3,10 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import ThemeBar from "@/components/ThemeBar";
-const World3D = dynamic(() => import("@/components/World3D"), {
+const HomeEmblem = dynamic(() => import("@/components/TeamEmblem3D"), {
   ssr: false,
-  loading: () => <div className="surface p-6"><div className="t-kicker">§ 01 — The World, in 3D</div><div className="skeleton mt-2" style={{ height: 380 }} /></div>,
+  loading: () => <div className="skeleton" style={{ width: 64, height: 64, borderRadius: 12 }} />,
 });
+import WorldSection from "@/components/WorldSection";
 import TeamCard from "@/components/TeamCard";
 import KpiStrip, { type Log } from "@/components/KpiStrip";
 import LogFeed from "@/components/LogFeed";
@@ -83,10 +84,15 @@ export default function Page() {
     <div className="min-h-screen">
       {/* nameplate */}
       <header className="sticky top-0 z-20 border-b" style={{ background: "hsl(var(--background) / .92)", backdropFilter: "blur(12px)" }}>
-        <div className="mx-auto max-w-[1400px] px-3 sm:px-5 pt-2 flex items-end gap-3">
+        <div className="mx-auto max-w-[1760px] px-3 sm:px-5 pt-2 flex items-end gap-3">
           <span className="t-small t-mono hidden sm:block pb-2" style={{ color: "hsl(var(--muted-fg))" }}>Vol. VII — Sep 2026</span>
           <span className="mx-auto text-center font-extrabold" style={{ fontFamily: "var(--font-serif)", fontSize: "1.6rem", letterSpacing: "-0.02em", lineHeight: 1 }}>
             The Empire <span style={{ color: "hsl(var(--primary))" }}>·</span> <span className="italic font-medium">Agent World</span>
+          </span>
+          <span className="hidden xl:flex items-center gap-1 pb-1" aria-hidden>
+            {TEAMS.map((t) => (
+              <span key={t.id} style={{ color: "hsl(var(--muted-fg))" }}><Motif id={t.id} className="h-4 w-4" /></span>
+            ))}
           </span>
           <span className="flex items-center gap-2 pb-1.5">
             <span className="barcode hidden md:block" style={{ width: 64, height: 22 }} aria-hidden />
@@ -94,14 +100,14 @@ export default function Page() {
           </span>
         </div>
         <div className="rule-double mx-3 sm:mx-5" />
-        <nav className="mx-auto max-w-[1400px] px-3 sm:px-5 py-1.5 flex gap-4 t-small font-bold" aria-label="Sections"
+        <nav className="mx-auto max-w-[1760px] px-3 sm:px-5 py-1.5 flex gap-4 t-small font-bold" aria-label="Sections"
           style={{ color: "hsl(var(--muted-fg))" }}>
           <a href="#world">The World</a><a href="#numbers">By the Numbers</a><a href="#newsroom">Newsroom</a><a href="#issues">Coming Issues</a>
           <span className="ml-auto hidden sm:inline"><Chip tone="live"><span aria-hidden>●</span> LIVE</Chip></span>
         </nav>
       </header>
 
-      <div className="mx-auto max-w-[1500px] px-3 sm:px-5 py-4 sm:py-6 grid gap-5 lg:grid-cols-[244px_minmax(0,1fr)] items-start">
+      <div className="mx-auto max-w-[1760px] px-3 sm:px-5 py-4 sm:py-6 grid gap-5 lg:grid-cols-[244px_minmax(0,1fr)] items-start">
         <aside className="hidden lg:block sticky top-[104px] surface p-3" aria-label="Newsroom rail">
           <SideRail cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} statusOf={statusOf} alerts={alerts} />
         </aside>
@@ -118,6 +124,20 @@ export default function Page() {
             ))}
           </div>
         </div>
+        {(() => {
+          if (!logs.length) return null;
+          const mins = Math.floor((Date.now() - Date.parse(logs[0].ts)) / 60000);
+          if (!Number.isFinite(mins) || mins <= 35) return null;
+          return (
+            <div className="surface px-3 py-2 t-small flex flex-wrap items-center gap-2" role="alert"
+              style={{ borderLeft: "4px solid hsl(var(--warn))" }}>
+              <b>Wire quiet for {mins} min.</b>
+              <span style={{ color: "hsl(var(--muted-fg))" }}>
+                The background runner may be asleep — revive it with <code className="t-mono">python empire/runner/orchestrator.py --auto</code> (or run the Startup shortcut again).
+              </span>
+            </div>
+          );
+        })()}
         {/* cover story */}
         <section className="grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] items-end">
           <div>
@@ -144,7 +164,7 @@ export default function Page() {
         </section>
 
         <Reveal><section id="world" className="scroll-mt-24">
-          <World3D logs={logs} cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} />
+          <WorldSection logs={logs} cur={cur} onPick={(t) => { setCur(t); setWorld(t.world); }} />
         </section></Reveal>
 
         <Reveal><section id="numbers" className="scroll-mt-24">
@@ -188,10 +208,13 @@ export default function Page() {
                 <span className="surface grid place-items-center shrink-0" style={{ width: 56, height: 56, borderRadius: 10, color: "hsl(var(--foreground))" }}>
                   <Motif id={cur.id} className="h-9 w-9" />
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="t-kicker">Story № {cur.id}</div>
                   <h2 className="t-h2 truncate">{cur.name}</h2>
                 </div>
+                <span className="shrink-0 hidden sm:block" style={{ width: 64, height: 64 }} aria-hidden>
+                  <HomeEmblem team={cur} />
+                </span>
               </div>
               <p className="t-small mt-2 italic" style={{ fontFamily: "var(--font-serif)", fontSize: "0.95rem" }}>“{cur.tagline}”</p>
               <p className="t-small mt-1" style={{ color: "hsl(var(--muted-fg))" }}>

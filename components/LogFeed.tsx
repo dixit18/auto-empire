@@ -17,20 +17,20 @@ export default function LogFeed({ logs, loading, onRunAll }: { logs: Log[]; load
         action={<button className="btn btn-primary" onClick={onRunAll}>⚡ Run ALL now</button>} />
     );
   return (
-    <ol className="space-y-1.5" aria-live="polite">
+    <ol className="space-y-1.5 min-w-0" aria-live="polite">
       <AnimatePresence initial={false}>
         {logs.map((l, i) => (
           <motion.li key={`${l.ts}-${i}`} initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: EASE }}
-            className="surface-2 px-2.5 py-2 flex items-baseline gap-2">
-            <span aria-hidden style={{ width: 7, height: 7, borderRadius: 99, background: TONE[l.status] ?? TONE.progress, flexShrink: 0, alignSelf: "center" }} />
-            <span className="t-mono shrink-0" style={{ fontSize: "0.7rem", color: "hsl(var(--muted-fg))" }}>{String(l.ts).slice(0, 19)}</span>
-            <span className="t-small min-w-0 flex-1">
-              <b className="t-mono" style={{ fontSize: "0.75rem" }}>{String(l.team).slice(0, 2)}</b>{" "}
-              <span style={{ color: "hsl(var(--muted-fg))" }}>{l.from}→{l.to} · {l.phase}</span>{" "}
-              <span className="block truncate">{l.msg}</span>
-            </span>
-            <span className="chip ml-auto shrink-0 hidden sm:inline-flex">{l.status}</span>
+            className="surface-2 px-2.5 py-2 min-w-0 overflow-hidden">
+            <div className="flex items-center gap-x-2 gap-y-0.5 flex-wrap">
+              <span aria-hidden style={{ width: 7, height: 7, borderRadius: 99, background: TONE[l.status] ?? TONE.progress, flexShrink: 0 }} />
+              <span className="t-mono shrink-0" style={{ fontSize: "0.7rem", color: "hsl(var(--muted-fg))" }}>{String(l.ts).slice(11, 19)}</span>
+              <b className="t-mono shrink-0" style={{ fontSize: "0.75rem" }}>{String(l.team).slice(0, 2)}</b>
+              <span className="t-small truncate" style={{ color: "hsl(var(--muted-fg))" }}>{l.from}→{l.to} · {l.phase}</span>
+              <span className="chip ml-auto shrink-0 hidden md:inline-flex">{l.status}</span>
+            </div>
+            <p className="t-small truncate mt-0.5" title={l.msg}>{l.msg}</p>
           </motion.li>
         ))}
       </AnimatePresence>
