@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TEAMS, ISLANDS, HUB, type Team } from "@/lib/teams";
+import { TEAMS, ACTIVE_TEAMS, ISLANDS, HUB, type Team } from "@/lib/teams";
 import { Motif } from "./motifs";
 import type { Log } from "./KpiStrip";
 
@@ -19,7 +19,7 @@ export default function FlatAtlas({ logs, cur, onPick }: { logs: Log[]; cur: Tea
 
   const routes = useMemo(() => {
     const m: Record<string, string> = {};
-    for (const t of TEAMS) {
+    for (const t of ACTIVE_TEAMS) {
       const p = ISLANDS[t.id];
       const mx = (p.x + HUB.x) / 2, my = (p.y + HUB.y) / 2 - 7;
       m[t.id] = `M ${p.x} ${p.y} Q ${mx} ${my} ${HUB.x} ${HUB.y}`;
@@ -83,8 +83,8 @@ export default function FlatAtlas({ logs, cur, onPick }: { logs: Log[]; cur: Tea
       style={{ aspectRatio: "1000 / 460", background: "hsl(var(--card))", cursor: "grab", touchAction: "none" }}>
       <div className="absolute inset-0" style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.k})`, transformOrigin: "0 0" }}>
         <svg viewBox="0 0 100 46" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
-          {TEAMS.map((t) => {
-            const lit = hover === null || hover === t.id;
+            {ACTIVE_TEAMS.map((t) => {
+              const lit = hover === null || hover === t.id;
             const hot = hover === t.id;
             return (
               <g key={t.id} opacity={lit ? 1 : 0.16} style={{ transition: "opacity .2s" }}>
@@ -105,9 +105,9 @@ export default function FlatAtlas({ logs, cur, onPick }: { logs: Log[]; cur: Tea
           ))}
         </svg>
         <div className="absolute t-mono" style={{ left: `${HUB.x}%`, top: `${HUB.y}%`, transform: "translate(-50%, 34px)", fontSize: 10, fontWeight: 800, letterSpacing: "0.12em" }}>THE&nbsp;WIRE</div>
-        {TEAMS.map((t) => {
-          const p = ISLANDS[t.id];
-          const on = t.id === cur.id;
+          {ACTIVE_TEAMS.map((t) => {
+            const p = ISLANDS[t.id];
+            const on = t.id === cur.id;
           const ink = INK[t.world];
           return (
             <div key={t.id} className="absolute" style={{ left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%,-50%)" }}>

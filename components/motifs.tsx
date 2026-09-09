@@ -114,10 +114,21 @@ export function MParcel(p: P) {
   </Base>;
 }
 
+/* 12 — Recall: graph nodes remembering (connected memory) */
+export function MGraph(p: P) {
+  return <Base {...p}>
+    <circle cx="20" cy="22" r="6" fill="hsl(var(--primary) / .25)" />
+    <circle cx="44" cy="18" r="4" /><circle cx="46" cy="42" r="6" fill="hsl(var(--primary) / .25)" />
+    <circle cx="18" cy="46" r="4" />
+    <path d="M25 25l14-5M42 24l3 12M40 43l-16 1M24 27l-4 14" opacity=".7" />
+    <circle cx="32" cy="32" r="2.4" fill="hsl(var(--primary))" stroke="none" />
+  </Base>;
+}
+
 export const MOTIFS: Record<string, (p: P) => React.ReactElement> = {
   "01": MGhostwriter, "02": MTube, "03": MListener, "04": MSignal, "05": MPin,
   "06": MSpark, "07": MHouse, "08": MShop, "09": MMoon, "10": MSteps,
-  "11": MParcel,
+  "11": MParcel, "12": MGraph,
 };
 
 export function Motif({ id, className = "" }: { id: string; className?: string }) {

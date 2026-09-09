@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { TEAMS } from "@/lib/teams";
+import { ACTIVE_TEAMS } from "@/lib/teams";
 import { teamThoughts, ago } from "@/lib/thoughts";
 import type { Log } from "./KpiStrip";
 
@@ -49,7 +49,7 @@ export default function LiveMinds({ logs }: { logs: Log[] }) {
         </div>
       )}
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-        {TEAMS.map((t) => {
+        {ACTIVE_TEAMS.map((t) => {
           const th = teamThoughts(t, logs);
           return (
             <div key={t.id} className="surface-2 px-2.5 py-2 flex gap-2 min-w-0">

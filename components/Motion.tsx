@@ -26,15 +26,16 @@ export function Reveal({ children, className = "", y = 22 }: { children: ReactNo
   return <div ref={ref} className={className}>{children}</div>;
 }
 
-/* Kinetic headline: words stagger up on load. */
+/* Kinetic headline: blur-to-sharp word stagger on load. */
 export function Kinetic({ text, className = "" }: { text: string; className?: string }) {
   const ref = useRef<HTMLHeadingElement>(null);
   const words = text.split(" ");
   useEffect(() => {
     if (!setup() || !ref.current) return;
     const tween = gsap.fromTo(ref.current.querySelectorAll(".kw"),
-      { opacity: 0, y: 26, rotate: 1.5 },
-      { opacity: 1, y: 0, rotate: 0, duration: 0.65, ease: "power3.out", stagger: 0.07, delay: 0.1 });
+      { opacity: 0, y: 26, rotate: 1.5, filter: "blur(7px)" },
+      { opacity: 1, y: 0, rotate: 0, filter: "blur(0px)", duration: 0.65, ease: "power3.out", stagger: 0.07, delay: 0.1,
+        onComplete: () => gsap.set(ref.current!.querySelectorAll(".kw"), { clearProps: "filter" }) });
     return () => { tween.kill(); };
   }, []);
   return (

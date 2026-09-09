@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { TEAMS } from "@/lib/teams";
+import { ACTIVE_TEAMS } from "@/lib/teams";
 import { THESES } from "@/lib/theses";
 import { Motif } from "./motifs";
 
@@ -12,7 +12,7 @@ export default function AppLauncher() {
       <h2 className="t-h2">Eleven companies. Six theses. Seventeen doors.</h2>
       <div className="t-kicker mt-4 mb-2">Companies</div>
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-        {TEAMS.map((t) => (
+        {ACTIVE_TEAMS.map((t) => (
           <Link key={t.id} href={`/${t.dir}`} className="surface p-3 flex gap-3 items-center card-hover min-w-0"
             style={{ textDecoration: "none", color: "inherit" }}>
             <span className="surface-2 grid place-items-center shrink-0" style={{ width: 44, height: 44, borderRadius: 10, color: "hsl(var(--foreground))" }}>

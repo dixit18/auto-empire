@@ -20,8 +20,9 @@ import LatestDrops from "@/components/LatestDrops";
 import AppLauncher from "@/components/AppLauncher";
 import SideRail from "@/components/SideRail";
 import { Kinetic, Reveal } from "@/components/Motion";
+import { Magnetic, ScrollProgress, CursorGlow } from "@/components/fx";
 import { Motif } from "@/components/motifs";
-import { TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
+import { TEAMS, ACTIVE_TEAMS, FUTURE_IDEAS, type Team } from "@/lib/teams";
 
 type TeamState = { phase: string; taskIndex: number; status: string; nextTask?: string; lastFile?: string; updated?: string };
 
@@ -84,6 +85,8 @@ export default function Page() {
 
   return (
     <div className="min-h-screen">
+      <ScrollProgress />
+      <CursorGlow />
       {/* nameplate */}
       <header className="sticky top-0 z-20 border-b" style={{ background: "hsl(var(--background) / .92)", backdropFilter: "blur(12px)" }}>
         <div className="mx-auto max-w-[1760px] px-3 sm:px-5 pt-2 flex items-end gap-3">
@@ -157,8 +160,8 @@ export default function Page() {
           <div className="surface p-4">
             <div className="t-kicker">Press actions</div>
             <div className="mt-2 flex flex-wrap gap-2">
-              <Button loading={busy} onClick={() => run(cur.id)}>▶ Run {cur.id}</Button>
-              <Button variant="ghost" disabled={busy} onClick={() => run(undefined, true)}>⚡ Run ALL</Button>
+              <Magnetic><Button loading={busy} onClick={() => run(cur.id)}>▶ Run {cur.id}</Button></Magnetic>
+              <Magnetic strength={0.22}><Button variant="ghost" disabled={busy} onClick={() => run(undefined, true)}>⚡ Run ALL</Button></Magnetic>
               <Button variant="ghost" onClick={refresh}>↻ Refresh</Button>
             </div>
             <p className="t-small t-mono mt-2" style={{ color: "hsl(var(--muted-fg))" }}>writes STATE.json + HANDOFF.md + _bus/log.jsonl</p>
@@ -171,7 +174,7 @@ export default function Page() {
 
         <Reveal><section id="numbers" className="scroll-mt-24">
           <div className="t-kicker mb-2">§ 02 — By the Numbers</div>
-          <KpiStrip logs={logs} teamCount={TEAMS.length} />
+          <KpiStrip logs={logs} teamCount={ACTIVE_TEAMS.length} />
         </section></Reveal>
 
         <Reveal><section className="scroll-mt-24">

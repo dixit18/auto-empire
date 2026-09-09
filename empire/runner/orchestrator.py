@@ -17,6 +17,7 @@ TEAMS = [
  "04-x-signal-bots","05-etsy-pinterest-digital","06-custom-gpt-suite",
  "07-staging-interior-ai","08-localbiz-autopilot","09-wellness-audio","10-micro-course-factory",
  "11-dropshipping-lab",
+ "12-memory-layer",
 ]
 
 PHASE_TASKS = {

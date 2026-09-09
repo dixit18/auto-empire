@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { TEAMS, type Team } from "@/lib/teams";
+import { ACTIVE_TEAMS, type Team } from "@/lib/teams";
 
 const DOTS: Record<string, string> = { forest: "#2e7d4f", beach: "#0b6e99", sunset: "#bd5a2e", lagoon: "#0e7c7b" };
 
@@ -26,8 +26,8 @@ export default function SideRail({ cur, onPick, statusOf, alerts }: {
   }, []);
   const query = q.trim().toLowerCase();
   const list = query
-    ? TEAMS.filter((t) => `${t.id} ${t.name} ${t.industry} ${t.tagline} ${t.master}`.toLowerCase().includes(query))
-    : TEAMS;
+    ? ACTIVE_TEAMS.filter((t) => `${t.id} ${t.name} ${t.industry} ${t.tagline} ${t.master}`.toLowerCase().includes(query))
+    : ACTIVE_TEAMS;
   return (
     <div className="space-y-3">
       <div>

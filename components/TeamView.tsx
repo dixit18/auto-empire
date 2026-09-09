@@ -4,6 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import AgentGraph from "@/components/AgentGraph";
 import Vault from "@/components/Vault";
+import MemoryLab from "@/components/MemoryLab";
 import LogFeed from "@/components/LogFeed";
 import Approvals from "@/components/Approvals";
 import { Button, Card, Chip } from "@/components/ui";
@@ -143,6 +144,8 @@ export default function TeamView({ team }: { team: Team }) {
       )}
 
       {tab === "vault" && <Vault team={team} />}
+
+      {team.id === "12" && <MemoryLab />}
 
       {tab === "activity" && (
         <div className="space-y-3">

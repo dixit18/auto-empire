@@ -5,7 +5,7 @@ import { OrbitControls, Grid, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { TEAMS, ISLANDS, type Team } from "@/lib/teams";
+import { TEAMS, ACTIVE_TEAMS, ISLANDS, type Team } from "@/lib/teams";
 import type { Log } from "./KpiStrip";
 
 /* Editorial island inks + clay pastels (matte studio look). */
@@ -21,7 +21,7 @@ type Curve = { teamId: string; curve: THREE.QuadraticBezierCurve3 };
 function useCurves() {
   return useMemo(() => {
     const m: Record<string, THREE.QuadraticBezierCurve3> = {};
-    for (const t of TEAMS) {
+    for (const t of ACTIVE_TEAMS) {
       const p = ISLANDS[t.id];
       const a = new THREE.Vector3(PX(p.x), 0.32, PZ(p.y));
       const b = new THREE.Vector3(0, 0.62, 0);
@@ -100,7 +100,7 @@ function Rails({ curves, hover, night }: { curves: Record<string, THREE.Quadrati
   useEffect(() => () => Object.values(geos).forEach((g) => g.dispose()), [geos]);
   return (
     <group>
-      {TEAMS.map((t) => {
+      {ACTIVE_TEAMS.map((t) => {
         const hot = hover === t.id;
         const dim = hover !== null && !hot;
         return (
@@ -219,7 +219,7 @@ function Scene({ logs, cur, onPick, onHoverTeam }: {
       <ContactShadows position={[0, -0.11, 0]} opacity={night ? 0.55 : 0.32} scale={16} blur={2.6} far={4} color={night ? "#000000" : "#5a4a30"} />
       <Rails curves={curves} hover={hover} night={night} />
       <Hub />
-      {TEAMS.map((t) => (
+      {ACTIVE_TEAMS.map((t) => (
         <Island key={t.id} team={t} selected={t.id === cur.id}
           dimmed={hover !== null && hover !== t.id} night={night}
           onPick={() => onPick(t)} onHover={hoverBoth} />

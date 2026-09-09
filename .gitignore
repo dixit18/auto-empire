@@ -8,3 +8,6 @@ dist
 # NEVER commit tokens - use env vars only
 # render frames are regenerable bulk - never commit
 frames/
+# local memory DBs (schema lives in repo, data stays on machine)
+*.db
+*.db-journal
