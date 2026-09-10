@@ -251,6 +251,11 @@ def write_digest():
 
 def run_auto():
     print("Orchestrator AUTO - keep working working. Ctrl+C to stop (state persists).", flush=True)
+    try:
+        with open(os.path.join(ROOT, "runner", "orchestrator.pid"), "w", encoding="utf-8") as f:
+            f.write(str(os.getpid()))
+    except Exception:
+        pass
     last_digest = 0.0
     while True:
         progressed = False

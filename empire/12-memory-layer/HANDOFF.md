@@ -1,15 +1,15 @@
 # HANDOFF - 12-memory-layer
 
 ## Last done
-- P3: 30-day scale plan -> `12-memory-layer\outputs\P3-scale\30-day-scale-plan.md` at 2026-09-09T13:11:23
+- Monitoring revalidation at 2026-09-10T11:31:29 -> `outputs/P0-validation.md`
 
 ## Now doing
-- Next: advance to DONE_ALL
+- Compound loop: improve weakest P2/P3 artifact next.
 
 ## Next 3
-- Continue ROADMAP in order, nowait.
-- If needs-approval (publish/spend/outreach): log to approvals + continue other team.
-- Keep compounding: every run improves prior output.
+- Pick lowest-converting listing/pin and rewrite it.
+- Log result to bus.
+- Never idle; switch team if blocked.
 
 ## Blockers
 - None
