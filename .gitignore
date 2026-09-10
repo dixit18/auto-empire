@@ -13,3 +13,8 @@ frames/
 *.db-journal
 *.db-shm
 *.db-wal
+# runtime process files (live state, never source)
+*.pid
+run.log
+run.err.log
+watchdog.log
