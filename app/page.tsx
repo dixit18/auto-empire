@@ -16,6 +16,7 @@ import Approvals from "@/components/Approvals";
 import NeedsFromYou from "@/components/NeedsFromYou";
 import Theses from "@/components/Theses";
 import LiveMinds from "@/components/LiveMinds";
+import Floor from "@/components/Floor";
 import LatestDrops from "@/components/LatestDrops";
 import AppLauncher from "@/components/AppLauncher";
 import SideRail from "@/components/SideRail";
@@ -179,6 +180,10 @@ export default function Page() {
 
         <Reveal><section className="scroll-mt-24">
           <LiveMinds logs={logs} />
+        </section></Reveal>
+
+        <Reveal><section className="scroll-mt-24">
+          <Floor />
         </section></Reveal>
 
         <Reveal><section className="scroll-mt-24">

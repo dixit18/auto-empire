@@ -26,17 +26,17 @@ $orch = ProcsLike "*orchestrator.py*"
 $dog = ProcsLike "*watchdog.py*"
 if ($orch.Count -eq 0) { Start-Detached @("empire/runner/orchestrator.py", "--auto") "empire/runner/run.log"; Write-Output "orchestrator started" }
 if ($dog.Count -eq 0) { Start-Detached @("scripts/watchdog.py") "empire/runner/watchdog.log"; Write-Output "watchdog started" }
-# live display: Next production server on :3000 (the app you watch)
+# live display: Next production server on :4100 (the app you watch; :3000 stays empty by owner order)
 $webUp = $false
 try {
   $c = New-Object Net.Sockets.TcpClient
-  if ($c.BeginConnect("127.0.0.1", 3000, $null, $null).AsyncWaitHandle.WaitOne(1500)) { $webUp = $true }
+  if ($c.BeginConnect("127.0.0.1", 4100, $null, $null).AsyncWaitHandle.WaitOne(1500)) { $webUp = $true }
   $c.Close()
 } catch {}
 if (-not $webUp) {
-  Start-Process -FilePath "node" -ArgumentList "node_modules/next/dist/bin/next", "start", "-p", "3000" `
+  Start-Process -FilePath "node" -ArgumentList "node_modules/next/dist/bin/next", "start", "-p", "4100" `
     -WorkingDirectory $repo -WindowStyle Hidden | Out-Null
-  Write-Output "web display started on :3000"
+  Write-Output "web display started on :4100"
 } else {
   Write-Output "web display already up"
 }
