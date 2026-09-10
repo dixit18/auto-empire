@@ -4,7 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import AgentGraph from "@/components/AgentGraph";
 import Vault from "@/components/Vault";
-import MemoryLab from "@/components/MemoryLab";
+import ProductStage from "@/components/ProductStage";
 import LogFeed from "@/components/LogFeed";
 import Approvals from "@/components/Approvals";
 import { Button, Card, Chip } from "@/components/ui";
@@ -118,7 +118,11 @@ export default function TeamView({ team }: { team: Team }) {
       </div>
 
       {tab === "overview" && (
-        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_340px] items-start">
+        <div className="space-y-3">
+          <Card>
+            <ProductStage team={team} />
+          </Card>
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_340px] items-start">
           <Card>
             <div className="t-kicker mb-1">Now</div>
             <p className="t-body t-mono">{th.master.text}</p>
@@ -140,12 +144,11 @@ export default function TeamView({ team }: { team: Team }) {
             )}
           </Card>
           <div className="min-w-0"><Approvals logs={logs} onApproved={refresh} /></div>
+          </div>
         </div>
       )}
 
       {tab === "vault" && <Vault team={team} />}
-
-      {team.id === "12" && <MemoryLab />}
 
       {tab === "activity" && (
         <div className="space-y-3">
