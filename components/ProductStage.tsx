@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import MemoryLab from "./MemoryLab";
+import Room from "./Room";
 import { HookCrafter, TitleRewriter, ReviewResponder, IntentScorer, IntentForm } from "./demos";
 import type { Team } from "@/lib/teams";
 
@@ -67,6 +68,8 @@ export default function ProductStage({ team }: { team: Team }) {
       return <DentalShop />;
     case "12":
       return <MemoryLab />;
+    case "13":
+      return <Room team={team} />;
     default:
       return (
         <p className="t-small" style={{ color: "hsl(var(--muted-fg))" }}>

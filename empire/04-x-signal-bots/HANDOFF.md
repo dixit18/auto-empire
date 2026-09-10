@@ -1,7 +1,7 @@
 # HANDOFF - 04-x-signal-bots
 
 ## Last done
-- Monitoring revalidation at 2026-09-10T18:08:03 -> `outputs/P0-validation.md`
+- Monitoring revalidation at 2026-09-10T18:38:18 -> `outputs/P0-validation.md`
 
 ## Now doing
 - Compound loop: improve weakest P2/P3 artifact next.
