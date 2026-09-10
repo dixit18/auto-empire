@@ -17,8 +17,13 @@ Statuses: NOW (active) · NEXT (queued) · DONE (this week) · KILLED (with reas
 - DONE: magazine system, 3D world, vaults, live minds, needs section, solutions apps
 
 ## BRAM (backend)
-- NOW: eval goldens for 12 (40 recall cases) [done = file + precision script]
+- NOW: eval goldens for 12 — DONE 0.80 PASS (weakness: numeric/punctuation queries; graduation: FTS/stemming)
 - NEXT: SQLite→FTS graduation check; MCP tool wrapper for memory API
+
+## WHITESPACE TESTS (1 week each, dated 2026-09-10, owner: Mara)
+- W3 generative slow-TV: publish 10-min sway loop → win = 1k views + 10 subs / 30d
+- W4 trades micro-SaaS: 20 walk-in DMs with proof sheet → win = 1 paid pilot
+- W1 compliance receipts: bus→PDF audit export to 5 agent builders → win = 2 ask paid tier
 - DONE: Effect bus boundary, memory API + Lab, engines (6 films), runner hardening, watchdog, pid supervision
 
 ## QUILL (docs)

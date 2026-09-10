@@ -1,6 +1,13 @@
 # BUILD LOG — living record (newest on top, append-only by date)
 Every round states: what shipped, what's next, what I assumed, what I decided and why.
 
+## 2026-09-10 — eval goldens PASS 0.80, whitespace tests staffed
+- Shipped: 40-case golden set + eval script; precision@3 = 0.80 exactly (bar met, numeric-query weakness logged, not gamed).
+- W1/W3/W4 dated test cards in TASKS.md. Wikimedia CDN still 429 (~24h) — rain cut stands alone until lift.
+- Assumption: LIKE-recall holds indie scale; FTS/stemming graduates it.
+- Decision: ship at bar with weakness public rather than tune goldens to pass prettier.
+- Next: W3 publish loop → W4 DMs → W1 export; lettuce retry between rounds.
+
 ## 2026-09-09 — full-kit Poetcore, berry film, CDN throttle call
 - Shipped: Poetcore full kit (6 papers, 2 envelopes, 24 prompts, 12 labels) + 10-page PDF; berry-fruit film (blossom→berries, 25s).
 - Blocked (external): upload.wikimedia.org 429 throttling our IP ~30 min — lettuce/aerogarden real cuts queued with exact resume (SOURCES.md has URLs + edit recipe). Stopped hammering on purpose.
