@@ -13,6 +13,7 @@ export const TEAMS: Team[] = [
   { id: "10", dir: "10-micro-course-factory", name: "Micro-Course Factory", industry: "EdTech", master: "Dean", crew: ["Researcher", "Teacher", "TA", "Marketer"], world: "sunset", price: "$29 + $19/mo", kpi: [">40% finish", "NPS"], phases: ["P0 presell 10", "P1 film 10d", "P2 launch", "P3 stack"], tagline: "One problem, 90 minutes, templates included.", archived: true },
   { id: "11", dir: "11-dropshipping-lab", name: "Dropshipping Lab", industry: "Commerce", master: "Drop Commander", crew: ["ProductScout", "Sourcer", "CreativeDirector", "MediaBuyer"], world: "beach", price: "$34.95 + refill", kpi: ["CAC ≤$13", "beROAS 1.6"], phases: ["P0 gates", "P1 samples", "P2 tests", "P3 scale"], tagline: "Yellow teeth to white in 14 days — refill forever." },
   { id: "12", dir: "12-memory-layer", name: "Recall Foundry", industry: "AI Infra", master: "MemoryKeeper", crew: ["Ingestor", "GraphWeaver", "Recaller", "Gatekeeper"], world: "lagoon", price: "$0 + $19 sync", kpi: ["p95 <50ms", "P@3 ≥0.8"], phases: ["P0 landscape", "P1 local MVP", "P2 evals+MCP", "P3 sync"], tagline: "The memory layer that runs where your agent runs." },
+  { id: "13", dir: "13-mission-control", name: "Mission Control", industry: "DevTools", master: "FlightDirector", crew: ["RoomKeeper", "CostClerk", "RelayPilot", "Scribe"], world: "sunset", price: "$29/room", kpi: ["handoff ≥95%", "10 pilots"], phases: ["P0 interviews", "P1 dogfood", "P2 pilots", "P3 tiers"], tagline: "One shared room for tiny agent teams." },
 ];
 export const FUTURE_IDEAS = [
   { t: "Voice Cloning for Podcasts", d: "1 voice note -> week of shorts + newsletter. Forest, parrot mascot.", world: "forest" },
@@ -31,6 +32,6 @@ export const ISLANDS: Record<string, { x: number; y: number }> = {
   "01": { x: 10, y: 30 }, "02": { x: 24, y: 64 }, "03": { x: 38, y: 26 },
   "04": { x: 52, y: 62 }, "05": { x: 66, y: 24 }, "06": { x: 80, y: 58 },
   "07": { x: 91, y: 28 },   "08": { x: 32, y: 86 }, "09": { x: 60, y: 87 },
-  "10": { x: 86, y: 85 }, "11": { x: 50, y: 10 }, "12": { x: 14, y: 62 },
+  "10": { x: 86, y: 85 }, "11": { x: 50, y: 10 }, "12": { x: 14, y: 62 }, "13": { x: 86, y: 10 },
 };
 export const HUB = { x: 50, y: 45 };

@@ -18,6 +18,7 @@ TEAMS = [
  "07-staging-interior-ai","08-localbiz-autopilot","09-wellness-audio","10-micro-course-factory",
  "11-dropshipping-lab",
  "12-memory-layer",
+ "13-mission-control",
 ]
 
 PHASE_TASKS = {

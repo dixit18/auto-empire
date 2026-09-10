@@ -125,10 +125,20 @@ export function MGraph(p: P) {
   </Base>;
 }
 
+/* 13 — Control: tower with signal waves (shared room that sees all) */
+export function MTower(p: P) {
+  return <Base {...p}>
+    <path d="M28 54l4-30 4 30" /><path d="M24 54h16" />
+    <path d="M32 24v-6" /><circle cx="32" cy="14" r="2.6" fill="hsl(var(--primary))" stroke="none" />
+    <path d="M22 12a14 14 0 0 1 20 0" opacity=".7" /><path d="M17 8a21 21 0 0 1 30 0" opacity=".4" />
+    <path d="M14 54h36" opacity=".5" />
+  </Base>;
+}
+
 export const MOTIFS: Record<string, (p: P) => React.ReactElement> = {
   "01": MGhostwriter, "02": MTube, "03": MListener, "04": MSignal, "05": MPin,
   "06": MSpark, "07": MHouse, "08": MShop, "09": MMoon, "10": MSteps,
-  "11": MParcel, "12": MGraph,
+  "11": MParcel, "12": MGraph, "13": MTower,
 };
 
 export function Motif({ id, className = "" }: { id: string; className?: string }) {
